@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "add:vite": "pnpm add vite  --save",
+    "add:v-clip": "pnpm add v-clipboard --save",
+    "vite:help": "vite --help",
+    "vite:init": "vite init",
+    "vite:boot": ""
+  },
+  "dependencies": {
+    "pnpm": "^10.33.0",
+    "v-clipboard": "3.0.0-next.1",
+    "vite": "^8.0.9"
+  }
+}
