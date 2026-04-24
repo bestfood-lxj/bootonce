@@ -2,6 +2,7 @@
   "scripts": {
     "add:vite": "pnpm add vite  --save",
     "add:v-clip": "pnpm add v-clipboard --save",
+    "abce:install": "cd abce && pnpm install",
     "create:vite": "pnpm create vite",
     "vite:help": "vite --help",
     "vite:init": "vite init",
