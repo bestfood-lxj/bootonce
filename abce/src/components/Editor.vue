@@ -135,20 +135,17 @@ const valueHtml = ref('<p>hello</p>');
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-  setInterval(() => {
-    console.log(editorRef)
-    SlateTransforms.insertNodes(
+  SlateTransforms.insertNodes(
       editorRef.value,
       [{
         type: 'icon',
         icon: 'svg-icon:delete',
         size: 16,
         color: 'red',
-        children: [{ text: '' }], // inline void 节点必须有 children
+        children: [{ text: '44' }], // inline void 节点必须有 children
       }],
       { at: SlateEditor.end(editorRef.value, []) }
     );
-  }, 2000)
 });
 
 const toolbarConfig = {};
