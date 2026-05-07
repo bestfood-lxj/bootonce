@@ -4,6 +4,7 @@
       <button @click="insertText">insert text</button>
       <button @click="printHtml">print html</button>
       <button @click="disable">disable</button>
+      <div ref="mountEl" class="snabbdom-root"></div>
     </div>
     <div style="border: 1px solid #ccc; margin-top: 10px">
       <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" mode="default"
@@ -22,12 +23,12 @@ import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
-import { h } from 'snabbdom';
+import { init, h, classModule, styleModule, eventListenersModule, attributesModule } from 'snabbdom'
 import { type Descendant } from "slate"
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
-
+const patchVue = init([attributesModule,classModule, styleModule, eventListenersModule,])
 type Icon = {
   type: 'icon'
   icon: string
@@ -42,6 +43,23 @@ declare module 'slate' {
   interface CustomTypes {
     Element: Icon
   }
+}
+function buildVNode() {
+  return h("div", [
+    h("a", { props: { href: "/foo" } }, "I'll take you places!"),
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ])
+  ]);
 }
 const renderIcon = (elemNode: any) => {
   const {
@@ -78,6 +96,7 @@ const renderIcon = (elemNode: any) => {
       },
     },
     [
+      h("a", { props: { href: "/foo" } }, "I'll take you places!"),
 h("svg", { attrs: { width: 100, height: 100 } }, [
   h("circle", {
     attrs: {
@@ -106,7 +125,7 @@ const editorRef = shallowRef();
 
 // 内容 HTML
 const valueHtml = ref('<p>hello</p>');
-
+const mountEl = ref(null)
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   setTimeout(()=>{
@@ -124,6 +143,7 @@ onMounted(() => {
       ],
       { at: SlateEditor.end(editorRef.value, []) }
     );
+    patchVue(mountEl.value, buildVNode())
   },2000)
   
 });

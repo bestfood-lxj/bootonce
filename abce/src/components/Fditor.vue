@@ -14,7 +14,7 @@ const patchVue = init([attributesModule,classModule, styleModule, eventListeners
 const mountEl = ref(null)
 
 // 构建初始 vnode
-function buildVNode(isUpdated) {
+function buildVNode() {
   return h("div", [
     h("svg", { attrs: { width: 100, height: 100 } }, [
       h("circle", {
