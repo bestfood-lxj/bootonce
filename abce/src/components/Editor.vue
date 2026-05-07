@@ -51,10 +51,7 @@ const renderIcon = (elemNode: any) => {
     svgClass = '',
     onClick = () => { },
   } = elemNode;
-  const isLocal = () => icon.startsWith('svg-icon:');
-  const symbolId = () => {
-    return isLocal() ? `#icon-${icon.split('svg-icon:')[1]}` : icon;
-  };
+
   const getIconifyStyle = () => {
     const style = {
       'font-size': `${size}px`,
@@ -81,8 +78,6 @@ const renderIcon = (elemNode: any) => {
       },
     },
     [
-      isLocal()
-        ?
 h("svg", { attrs: { width: 100, height: 100 } }, [
   h("circle", {
     attrs: {
@@ -94,21 +89,7 @@ h("svg", { attrs: { width: 100, height: 100 } }, [
       fill: "yellow"
     }
   })
-])
-        : h(
-          'span',
-          {
-            attrs: {
-              style: getIconifyStyle(),
-            },
-          },
-          [
-            h('span', {
-              // dataset: { icon: symbolId() }
-              attrs: { 'data-icon': symbolId() },
-            }),
-          ]
-        ),
+]),     
     ]
   );
 };
@@ -131,13 +112,16 @@ onMounted(() => {
   setTimeout(()=>{
     SlateTransforms.insertNodes(
       editorRef.value,
-      [{
-        type: 'icon',
-        icon: 'svg-icon:delete',
-        size: 16,
-        color: 'red',
-        children: [{ text: '44' }], // inline void 节点必须有 children
-      }],
+      [
+        {
+          type: 'icon',
+          icon: 'svg-icon:delete',
+          size: 16,
+          color: 'red',
+          children: [{ text: '44' }], // inline void 节点必须有 children
+        },
+        { type: 'paragraph', children: [{ text: 'aaa' }] },
+      ],
       { at: SlateEditor.end(editorRef.value, []) }
     );
   },2000)
