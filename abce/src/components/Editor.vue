@@ -82,26 +82,19 @@ const renderIcon = (elemNode: any) => {
     },
     [
       isLocal()
-        ? h(
-          'svg',
-          {
-            attrs: {
-              xmlns: 'http://www.w3.org/2000/svg',
-              class: getSvgClass(),
-              viewBox: '0 0 16 16',
-              width: '16',
-              height: '16',
-            },
-          },
-          [
-            h('path', {
-              attrs: {
-                fill: 'red',
-                d: 'M4.66683 2.66683V1.3335H11.3335V2.66683H14.6668V4.00016H13.3335V14.0002C13.3335 14.3684 13.035 14.6668 12.6668 14.6668H3.3335C2.96531 14.6668 2.66683 14.3684 2.66683 14.0002V4.00016H1.3335V2.66683H4.66683ZM4.00016 4.00016V13.3335H12.0002V4.00016H4.00016ZM6.00016 6.00016H7.3335V11.3335H6.00016V6.00016ZM8.66683 6.00016H10.0002V11.3335H8.66683V6.00016Z',
-              },
-            }),
-          ]
-        )
+        ?
+h("svg", { attrs: { width: 100, height: 100 } }, [
+  h("circle", {
+    attrs: {
+      cx: 50,
+      cy: 50,
+      r: 40,
+      stroke: "green",
+      "stroke-width": 4,
+      fill: "yellow"
+    }
+  })
+])
         : h(
           'span',
           {
@@ -135,7 +128,8 @@ const valueHtml = ref('<p>hello</p>');
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-  SlateTransforms.insertNodes(
+  setTimeout(()=>{
+    SlateTransforms.insertNodes(
       editorRef.value,
       [{
         type: 'icon',
@@ -146,6 +140,8 @@ onMounted(() => {
       }],
       { at: SlateEditor.end(editorRef.value, []) }
     );
+  },2000)
+  
 });
 
 const toolbarConfig = {};
@@ -179,23 +175,3 @@ const disable = () => {
 };
 
 </script>
-<style scoped lang="scss">
-::v-deep() .el-icon {
-  --color: inherit;
-  align-items: center;
-  display: inline-flex;
-  height: 1em;
-  justify-content: center;
-  line-height: 1em;
-  position: relative;
-  width: 1em;
-  fill: currentColor;
-  color: var(--color);
-  font-size: inherit;
-
-  svg {
-    width: 1em;
-    height: 1em;
-  }
-}
-</style>

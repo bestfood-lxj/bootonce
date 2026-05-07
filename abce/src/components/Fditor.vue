@@ -1,109 +1,131 @@
 <template>
-    <div style="border: 1px solid #ccc">
-      <Toolbar
-        style="border-bottom: 1px solid #ccc"
-        :editor="editorRef"
-        :defaultConfig="toolbarConfig"
-        :mode="mode"
-      />
-      <Editor
-        style="height: 500px; overflow-y: hidden;"
-        v-model="valueHtml"
-        :defaultConfig="editorConfig"
-        :mode="mode"
-        @onCreated="handleCreated"
-      />
-    </div>
+  <div class="container">
+    <div id="container"></div>
+    <div ref="mountEl" class="snabbdom-root"></div>
+  </div>
 </template>
-<script>
-import '@wangeditor-next/editor/dist/css/style.css' // 引入 css
 
-import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
-import { Boot, SlateEditor, SlateTransforms, } from '@wangeditor-next/editor';
-import { Editor, Toolbar,  } from '@wangeditor-next/editor-for-vue'
-import { h } from 'snabbdom';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { init, h, classModule, styleModule, eventListenersModule, attributesModule } from 'snabbdom'
+const patch = init([attributesModule]);
+const patchVue = init([attributesModule,classModule, styleModule, eventListenersModule,])
 
-export default {
-  components: { Editor, Toolbar },
-  setup() {
+const mountEl = ref(null)
 
-    const renderIcon = (elemNode: any) => {
-      const {
-        icon,
-        size = 16,
-        color = 'inherit',
-        svgClass = '',
-        onClick = () => { },
-      } = elemNode;
-      return h(
-        'i',
-        {
-          attrs: {
-            class: 'el-icon v-icon',
-            contenteditable: false,
-            style: `font-size: ${size}px;color: ${color}`,
-          },
-          props: {
-            onClick: onClick,
-          },
-        },
-      )
-    }
-    // 编辑器实例，必须用 shallowRef
-    const editorRef = shallowRef()
-
-    // 内容 HTML
-    const valueHtml = ref('<p>hello</p>')
-
-    Boot.registerModule({
-      renderElems: [
-        {
-          type: 'icon',
-          renderElem: renderIcon,
-        },
-      ],
-    });
-
-    // 模拟 ajax 异步获取内容
-    onMounted(() => {
-        const node1 = { type: 'paragraph', children: [{ text: 'aaa' }] }
-        const node2 = { type: 'paragraph', children: [{ text: 'bbb' }] }
-        const nodeList = [node1, node2]
-
-        
-        console.log(editorRef.value,editorRef)
-        setTimeout(() => {
-          SlateTransforms.insertNodes(
-            editorRef.value, 
-            nodeList,
-            { at: SlateEditor.end(editorRef.value, []) }
-          )
-            //valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-        }, 1500)
-    })
-
-    const toolbarConfig = {}
-    const editorConfig = { placeholder: '请输入内容...' }
-
-    // 组件销毁时，也及时销毁编辑器
-    onBeforeUnmount(() => {
-        const editor = editorRef.value
-        if (editor == null) return
-        editor.destroy()
-    })
-
-    const handleCreated = (editor) => {
-      editorRef.value = editor // 记录 editor 实例，重要！
-    }
-
-    return {
-      editorRef,
-      valueHtml,
-      mode: 'default', // 或 'simple'
-      toolbarConfig,
-      editorConfig,
-      handleCreated
-    };
-  }
+// 构建初始 vnode
+function buildVNode(isUpdated) {
+  return h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ])
+  ]);
 }
+onMounted(()=>{
+  const container = document.getElementById("container");
+  const vnode = h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ])
+  ]);
+  patch(container, vnode);
+  patchVue(mountEl.value, buildVNode(false))
+})
 </script>
+
+<style scoped>
+ h1 {
+        font-weight: normal;
+      }
+      .btn {
+        display: inline-block;
+        cursor: pointer;
+        background: #fff;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+        padding: 0.5em 0.8em;
+        transition: box-shadow 0.05s ease-in-out;
+        -webkit-transition: box-shadow 0.05s ease-in-out;
+      }
+      .btn:hover {
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+      }
+      .btn:active,
+      .active,
+      .active:hover {
+        box-shadow:
+          0 0 1px rgba(0, 0, 0, 0.2),
+          inset 0 0 4px rgba(0, 0, 0, 0.1);
+      }
+      .add {
+        float: right;
+      }
+      #container {
+        max-width: 42em;
+        margin: 0 auto 2em auto;
+      }
+      .list {
+        position: relative;
+      }
+      .row {
+        overflow: hidden;
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        left: 0px;
+        margin: 0.5em 0;
+        padding: 1em;
+        background: #fff;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+        transition:
+          transform 0.5s ease-in-out,
+          opacity 0.5s ease-out,
+          left 0.5s ease-in-out;
+        -webkit-transition:
+          transform 0.5s ease-in-out,
+          opacity 0.5s ease-out,
+          left 0.5s ease-in-out;
+      }
+      .row div {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .row > div:nth-child(1) {
+        width: 5%;
+      }
+      .row > div:nth-child(2) {
+        width: 30%;
+      }
+      .row > div:nth-child(3) {
+        width: 65%;
+      }
+      .rm-btn {
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #c25151;
+        width: 1.4em;
+        height: 1.4em;
+        text-align: center;
+        line-height: 1.4em;
+        padding: 0;
+      }
+</style>
