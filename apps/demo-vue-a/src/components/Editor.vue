@@ -144,7 +144,7 @@ const renderIcon_bak = (elemNode: any) => {
 Boot.registerModule({
   renderElems: [
     {
-      type: 'icon',
+      type: 'attachment',
       renderElem: renderIcon,
     },
   ],
@@ -161,13 +161,16 @@ onMounted(() => {
     console.log(editorRef)
     SlateTransforms.insertNodes(
       editorRef.value,
-      [{
-        type: 'icon',
-        icon: 'svg-icon:delete',
-        size: 16,
-        color: 'red',
-        children: [{ text: '' }], // inline void 节点必须有 children
-      }],
+      [
+        {
+          type: 'attachment',
+          icon: 'svg-icon:delete',
+          size: 16,
+          color: 'red',
+          children: [{ text: '' }], // inline void 节点必须有 children
+        },
+        { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
+      ],
       { at: SlateEditor.end(editorRef.value, []) }
     );
   }, 2000)
