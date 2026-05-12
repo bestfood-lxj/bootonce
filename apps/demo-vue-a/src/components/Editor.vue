@@ -28,140 +28,11 @@ const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
 
-type Icon = {
-  type: 'icon'
-  icon: string
-  size?: number
-  color?: string
-  svgClass?: string
-  onClick?: () => void
-  children: Descendant[]
-}
 
-declare module 'slate' {
-  interface CustomTypes {
-    Element: Icon
-  }
-}
-const renderIcon = (elemNode: any) => {
-  console.log('run r............................') 
-  console.log('run r............................') 
-  console.log('run r............................') 
-  console.log('run r............................') 
-  console.log('run r............................') 
-  return h("div", [
-    h("svg", { attrs: { width: 100, height: 100 } }, [
-      h("circle", {
-        attrs: {
-          cx: 50,
-          cy: 50,
-          r: 40,
-          stroke: "green",
-          "stroke-width": 4,
-          fill: "yellow"
-        }
-      })
-    ])
-  ]);
-}
-const renderIcon_bak = (elemNode: any) => {
-  const {
-    icon,
-    size = 16,
-    color = 'inherit',
-    svgClass = '',
-    onClick = () => { },
-  } = elemNode;
-  const isLocal = () => icon.startsWith('svg-icon:');
-  const symbolId = () => {
-    return isLocal() ? `#icon-${icon.split('svg-icon:')[1]}` : icon;
-  };
-  const getIconifyStyle = () => {
-    const style = {
-      'font-size': `${size}px`,
-      height: '1em',
-      color,
-    };
-    return Object.entries(style)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(';');
-  };
-  const getSvgClass = () => {
-    return `iconify ${svgClass ?? ''}`;
-  };
-  console.log('llllll..........')
-  return h(
-    'i',
-    {
-      attrs: {
-        class: 'el-icon v-icon',
-        contenteditable: false,
-        style: `font-size: ${size}px;color: ${color}`,
-      },
-      props: {
-        onClick: onClick,
-      },
-    },
-    [
-      isLocal()
-        ? h(
-          'svg',
-          {
-            attrs: {
-              xmlns: 'http://www.w3.org/2000/svg',
-              class: getSvgClass(),
-              viewBox: '0 0 16 16',
-              width: '16',
-              height: '16',
-            },
-          },
-          [
-            h('path', {
-              attrs: {
-                fill: 'red',
-                d: 'M4.66683 2.66683V1.3335H11.3335V2.66683H14.6668V4.00016H13.3335V14.0002C13.3335 14.3684 13.035 14.6668 12.6668 14.6668H3.3335C2.96531 14.6668 2.66683 14.3684 2.66683 14.0002V4.00016H1.3335V2.66683H4.66683ZM4.00016 4.00016V13.3335H12.0002V4.00016H4.00016ZM6.00016 6.00016H7.3335V11.3335H6.00016V6.00016ZM8.66683 6.00016H10.0002V11.3335H8.66683V6.00016Z',
-              },
-            }),
-          ]
-        )
-        : h(
-          'span',
-          {
-            attrs: {
-              style: getIconifyStyle(),
-            },
-          },
-          [
-            h('span', {
-              // dataset: { icon: symbolId() }
-              attrs: { 'data-icon': symbolId() },
-            }),
-          ]
-        ),
-    ]
-  );
-};
-Boot.registerModule({
-  renderElems: [
-    {
-      type: 'aicon',
-      renderElem: renderIcon,
-    },
-  ],
-});
 
-function renderAttachment(elem, children, editor) {   
-  console.log("renderAttachment ......")
-  console.log("renderAttachment ......")
-  console.log("renderAttachment ......")
-  console.log("renderAttachment ......")
-  return  h("a", { props: { href: "/bar" } }, "I'll take you places!")
-}
-const renderElemConf = {
-  type: 'attachment', // 新元素 type ，重要！！！
-  renderElem: renderAttachment,
-}
-Boot.registerRenderElem(renderElemConf)
+
+
+
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
 
@@ -185,6 +56,9 @@ onMounted(() => {
         {
           type: 'attachment',
           children: [{ text: '' }]
+        },
+        {
+          type: 'attachment'
         },
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
       ],
