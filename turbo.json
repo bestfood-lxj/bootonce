@@ -1,0 +1,33 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "dev": {
+      "inputs": [
+        "src/**",
+        "rollup.config.js"
+      ],
+      "dependsOn": [
+        "^dev"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "build": {
+      "inputs": [
+        "src/**",
+        "rollup.config.js"
+      ],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "example": {
+      "persistent": true,
+      "cache": false
+    }
+  }
+}
