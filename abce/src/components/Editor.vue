@@ -24,7 +24,7 @@ import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { init, h, classModule, styleModule, eventListenersModule, attributesModule } from 'snabbdom'
-import { type Descendant } from "slate"
+
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
@@ -36,7 +36,7 @@ type Icon = {
   color?: string
   svgClass?: string
   onClick?: () => void
-  children: Descendant[]
+  children: any[]
 }
 
 declare module 'slate' {
@@ -97,6 +97,7 @@ const renderIcon = (elemNode: any) => {
     },
     [
       h("a", { props: { href: "/foo" } }, "I'll take you places!"),
+      h("div",{attrs: {name:"boxabc"}}, "box a b c"),
 h("svg", { attrs: { width: 100, height: 100 } }, [
   h("circle", {
     attrs: {
@@ -140,10 +141,14 @@ onMounted(() => {
           children: [{ text: '44' }], // inline void 节点必须有 children
         },
         { type: 'paragraph', children: [{ text: 'aaa' }] },
+        { type: 'div', children: [{ text: 'aadda' }] },
       ],
       { at: SlateEditor.end(editorRef.value, []) }
     );
     patchVue(mountEl.value, buildVNode())
+    setTimeout(()=>{
+      patchVue(document.querySelector("[name='boxabc']"),buildVNode())
+    },1000)
   },2000)
   
 });
