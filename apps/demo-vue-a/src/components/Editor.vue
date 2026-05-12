@@ -68,6 +68,7 @@ const renderIcon = (elemNode: any) => {
   const getSvgClass = () => {
     return `iconify ${svgClass ?? ''}`;
   };
+  console.log('llllll..........')
   return h(
     'i',
     {
@@ -135,7 +136,7 @@ const valueHtml = ref('<p>hello</p>');
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-  setInterval(() => {
+  setTimeout(() => {
     console.log(editorRef)
     SlateTransforms.insertNodes(
       editorRef.value,
