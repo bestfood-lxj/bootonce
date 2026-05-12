@@ -43,7 +43,12 @@ declare module 'slate' {
     Element: Icon
   }
 }
-const renderIcon = (elemNode: any) => { 
+const renderIcon = (elemNode: any) => {
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
   return h("div", [
     h("svg", { attrs: { width: 100, height: 100 } }, [
       h("circle", {
