@@ -42,7 +42,7 @@ import { Boot, SlateEditor, SlateTransforms, type IDomEditor,IEditorConfig, IToo
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue'
 import { defineComponent, onBeforeUnmount, ref, shallowRef,onMounted} from 'vue'
 
-function buildVNode() {
+const  buildVNode = () => {
   return h("div", [
     h("a", { props: { href: "/foo" } }, "I'll take you places!"),
     h("svg", { attrs: { width: 100, height: 100 } }, [
