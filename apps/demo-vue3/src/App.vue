@@ -79,7 +79,7 @@ export default defineComponent({
       renderElems: [
         {
           type: 'sscc',
-          renderElem: renderIcon,
+          renderElem: buildVNode,
         },
       ],
     });
@@ -89,7 +89,7 @@ export default defineComponent({
           editorRef.value,
           [
             {
-              type: 'icon',
+              type: 'sscc',
               icon: 'svg-icon:delete',
               size: 16,
               color: 'red',
