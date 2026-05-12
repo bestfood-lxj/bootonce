@@ -144,11 +144,24 @@ const renderIcon_bak = (elemNode: any) => {
 Boot.registerModule({
   renderElems: [
     {
-      type: 'attachment',
+      type: 'aicon',
       renderElem: renderIcon,
     },
   ],
 });
+
+function renderAttachment(elem, children, editor) {   
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  return  h("a", { props: { href: "/bar" } }, "I'll take you places!")
+}
+const renderElemConf = {
+  type: 'attachment', // 新元素 type ，重要！！！
+  renderElem: renderAttachment,
+}
+Boot.registerRenderElem(renderElemConf)
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
 
@@ -163,11 +176,15 @@ onMounted(() => {
       editorRef.value,
       [
         {
-          type: 'attachment',
+          type: 'aicon',
           icon: 'svg-icon:delete',
           size: 16,
           color: 'red',
           children: [{ text: '' }], // inline void 节点必须有 children
+        },
+        {
+          type: 'attachment',
+          children: [{ text: '' }]
         },
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
       ],
