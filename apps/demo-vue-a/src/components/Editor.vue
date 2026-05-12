@@ -43,7 +43,23 @@ declare module 'slate' {
     Element: Icon
   }
 }
-const renderIcon = (elemNode: any) => {
+const renderIcon = (elemNode: any) => { 
+  return h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ])
+  ]);
+}
+const renderIcon_bak = (elemNode: any) => {
   const {
     icon,
     size = 16,
