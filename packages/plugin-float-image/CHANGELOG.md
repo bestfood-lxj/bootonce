@@ -1,0 +1,415 @@
+# @wangeditor-next/plugin-float-image
+
+## 2.0.0
+
+### Patch Changes
+
+- d51d961: feat(csp): add class-based editor style output mode with strict policy controls
+
+  Add a new `textStyleMode` editor config (`inline` by default, `class` optional).
+
+  When `textStyleMode: 'class'`, style export/import/render paths for:
+  - `color`, `bgColor`, `fontSize`, `fontFamily`
+  - `textAlign`, `lineHeight`, `indent`
+
+  now use deterministic class names with `data-w-e-*` attributes instead of inline styles.
+
+  This preserves existing behavior by default while enabling stricter CSP deployments that avoid inline text style attributes.
+
+  Add class-mode unknown-token controls:
+  - `classStylePolicy`: `preserve-data` (default), `fallback-inline`, `strict`
+  - `onClassStyleUnsupported`: callback for unsupported token reporting
+  - `styleClassTokens`: register extra allowed tokens for class output
+
+  Unknown class token behavior is now policy-driven instead of always generating classes. This prevents silent visual regressions and improves round-trip reliability.
+
+  Also add CSP class-mode export support for:
+  - basic `image` elem html export/parse
+  - `video-module` video/iframe alignment and size export/parse
+  - `list-module` list marker color export
+  - `table-module` table/row/cell export/parse fallback (class/data attrs)
+  - `plugin-float-image` export/parse
+
+  These paths now avoid inline `style` attributes when `textStyleMode: 'class'` is enabled.
+
+  For `list-module`, marker color class names are now `w-e-list-color-*` (instead of reusing basic module `w-e-color-*`) to remove implicit cross-package CSS coupling.
+
+  For `table-module`, unsupported class-mode `border-style` values now follow `classStylePolicy`:
+  - `preserve-data`: keep `data-w-e-border-line` only
+  - `fallback-inline`: keep data and use inline `border-style`
+  - `strict`: throw error
+
+- Updated dependencies [fe22817]
+- Updated dependencies [d51d961]
+  - @wangeditor-next/editor@5.7.0
+
+## 1.0.41
+
+### Patch Changes
+
+- @wangeditor-next/editor@5.6.56
+
+## 1.0.40
+
+### Patch Changes
+
+- @wangeditor-next/editor@5.6.55
+
+## 1.0.39
+
+### Patch Changes
+
+- Updated dependencies [2da282d]
+- Updated dependencies [3bdc0b7]
+- Updated dependencies [2c68112]
+  - @wangeditor-next/editor@5.6.54
+
+## 1.0.38
+
+### Patch Changes
+
+- Updated dependencies [00d1de8]
+  - @wangeditor-next/editor@5.6.53
+
+## 1.0.37
+
+### Patch Changes
+
+- Updated dependencies [2d02268]
+  - @wangeditor-next/editor@5.6.52
+
+## 1.0.36
+
+### Patch Changes
+
+- 5150062: Upgrade the Slate dependency line to `slate@^0.123.0` and `slate-history@^0.115.0`, and realign wangEditor's DOM bridge, selection sync, and composition handling with current Slate behavior.
+
+  This release also fixes regressions around full-document delete normalization, selectionchange handling in `Document | ShadowRoot`, and related list / paste / image / code-block flows covered by the workspace E2E suite.
+
+- Updated dependencies [015c192]
+- Updated dependencies [5150062]
+  - @wangeditor-next/editor@5.6.51
+
+## 1.0.35
+
+### Patch Changes
+
+- Updated dependencies [160e5a3]
+  - @wangeditor-next/editor@5.6.50
+
+## 1.0.34
+
+### Patch Changes
+
+- Updated dependencies [dd1b701]
+  - @wangeditor-next/editor@5.6.49
+
+## 1.0.33
+
+### Patch Changes
+
+- Updated dependencies [6b823fa]
+  - @wangeditor-next/editor@5.6.48
+
+## 1.0.32
+
+### Patch Changes
+
+- Updated dependencies [5aeb10f]
+  - @wangeditor-next/editor@5.6.47
+
+## 1.0.31
+
+### Patch Changes
+
+- Updated dependencies [b6e16d5]
+  - @wangeditor-next/editor@5.6.46
+
+## 1.0.30
+
+### Patch Changes
+
+- Updated dependencies [7808410]
+  - @wangeditor-next/editor@5.6.45
+
+## 1.0.29
+
+### Patch Changes
+
+- Updated dependencies [f6e1fda]
+  - @wangeditor-next/editor@5.6.44
+
+## 1.0.28
+
+### Patch Changes
+
+- Updated dependencies [ad751aa]
+- Updated dependencies [ad751aa]
+  - @wangeditor-next/editor@5.6.43
+
+## 1.0.27
+
+### Patch Changes
+
+- Updated dependencies [a37ae4b]
+  - @wangeditor-next/editor@5.6.42
+
+## 1.0.26
+
+### Patch Changes
+
+- Updated dependencies [cc355f3]
+  - @wangeditor-next/editor@5.6.41
+
+## 1.0.25
+
+### Patch Changes
+
+- a4b6fd8: chore: add rollup package link
+- Updated dependencies [e204312]
+- Updated dependencies [a4b6fd8]
+  - @wangeditor-next/editor@5.6.40
+
+## 1.0.24
+
+### Patch Changes
+
+- Updated dependencies [b557818]
+  - @wangeditor-next/editor@5.6.39
+
+## 1.0.23
+
+### Patch Changes
+
+- Updated dependencies [a28a86f]
+  - @wangeditor-next/editor@5.6.38
+
+## 1.0.22
+
+### Patch Changes
+
+- Updated dependencies [2b8635e]
+  - @wangeditor-next/editor@5.6.37
+
+## 1.0.21
+
+### Patch Changes
+
+- Updated dependencies [6c7e34d]
+  - @wangeditor-next/editor@5.6.36
+
+## 1.0.20
+
+### Patch Changes
+
+- Updated dependencies [09fa830]
+  - @wangeditor-next/editor@5.6.35
+
+## 1.0.19
+
+### Patch Changes
+
+- Updated dependencies [1450d35]
+  - @wangeditor-next/editor@5.6.34
+
+## 1.0.18
+
+### Patch Changes
+
+- Updated dependencies [71397d4]
+  - @wangeditor-next/editor@5.6.33
+
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies [aa01136]
+  - @wangeditor-next/editor@5.6.32
+
+## 1.0.16
+
+### Patch Changes
+
+- Updated dependencies [3f6d567]
+  - @wangeditor-next/editor@5.6.31
+
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies [c60e0e2]
+  - @wangeditor-next/editor@5.6.30
+
+## 1.0.14
+
+### Patch Changes
+
+- Updated dependencies [76fb46e]
+  - @wangeditor-next/editor@5.6.29
+
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies [53fcee8]
+  - @wangeditor-next/editor@5.6.28
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies [31f0207]
+  - @wangeditor-next/editor@5.6.27
+
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies [d1d8246]
+  - @wangeditor-next/editor@5.6.26
+
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies [592c7b6]
+  - @wangeditor-next/editor@5.6.25
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies [76819e1]
+  - @wangeditor-next/editor@5.6.24
+
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [f4e759e]
+  - @wangeditor-next/editor@5.6.23
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [7225111]
+  - @wangeditor-next/editor@5.6.22
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies [2099e64]
+  - @wangeditor-next/editor@5.6.21
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies [8c762a9]
+  - @wangeditor-next/editor@5.6.20
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [5fa2a72]
+  - @wangeditor-next/editor@5.6.19
+
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [ad3d49b]
+  - @wangeditor-next/editor@5.6.18
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [230e46d]
+  - @wangeditor-next/editor@5.6.17
+
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [33d87c9]
+  - @wangeditor-next/editor@5.6.16
+
+## 1.0.0
+
+### Major Changes
+
+- 7b050b7: publish first major version
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies [5bbff78]
+- Updated dependencies [7b80f5d]
+  - @wangeditor-next/editor@5.6.15
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [af6b10e]
+  - @wangeditor-next/editor@5.6.14
+
+## 0.1.10
+
+### Patch Changes
+
+- 08fbf75: upgrade stable version
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies [9fb698d]
+  - @wangeditor-next/editor@5.6.13
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies [11135d9]
+  - @wangeditor-next/editor@5.6.12
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [51f9221]
+  - @wangeditor-next/editor@5.6.11
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [258e365]
+  - @wangeditor-next/editor@5.6.10
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [58022b2]
+  - @wangeditor-next/editor@5.6.9
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [85c2579]
+  - @wangeditor-next/editor@5.6.8
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [1e70838]
+  - @wangeditor-next/editor@5.6.7
