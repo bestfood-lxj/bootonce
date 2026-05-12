@@ -57,9 +57,9 @@ onMounted(() => {
           type: 'attachment',
           children: [{ text: '' }]
         },
-        {
-          type: 'attachment'
-        },
+        // {
+        //   type: 'attachment'
+        // },
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
       ],
       { at: SlateEditor.end(editorRef.value, []) }
