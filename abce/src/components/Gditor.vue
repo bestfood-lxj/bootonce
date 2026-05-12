@@ -123,23 +123,3 @@ const disable = () => {
 };
 
 </script>
-<style scoped lang="scss">
-::v-deep() .el-icon {
-  --color: inherit;
-  align-items: center;
-  display: inline-flex;
-  height: 1em;
-  justify-content: center;
-  line-height: 1em;
-  position: relative;
-  width: 1em;
-  fill: currentColor;
-  color: var(--color);
-  font-size: inherit;
-
-  svg {
-    width: 1em;
-    height: 1em;
-  }
-}
-</style>
