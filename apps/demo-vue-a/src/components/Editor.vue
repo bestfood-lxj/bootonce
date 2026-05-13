@@ -43,8 +43,13 @@ const valueHtml = ref('<p>hello</p>');
 onMounted(() => {
   setTimeout(() => {
     console.log(editorRef);
+    editorRef.value.isVoid =(element) =>( ['aicon','attachment'].includes(element.type))
     var arg1 = editorRef.value;
     var arg2 = [
+        {
+          type: 'attachment',
+          children: [{ text: '' }]
+        },
         {
           type: 'aicon',
           icon: 'svg-icon:delete',
@@ -53,10 +58,7 @@ onMounted(() => {
           text: 'if (Node$1.isText(_node)) {',
           children: [{ text: '' }], // inline void 节点必须有 children
         },
-        {
-          type: 'attachment',
-          children: [{ text: '' }]
-        },
+        
         // {
         //   type: 'attachment'
         // },
