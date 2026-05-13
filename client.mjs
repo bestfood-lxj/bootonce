@@ -1,3 +1,4 @@
+//cp client.mjs node_modules/vite/dist/client/client.mjs
 import '@vite/env';
 
 const template = /*html*/ `
