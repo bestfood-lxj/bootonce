@@ -5,7 +5,9 @@ export default defineConfig({
   plugins: [vue()],
   server: { 
   	open: false,
-  	hmr: false,
+  	hmr: {
+  		update: false,
+  	},
   	ws:false,
   	wss:false,
   },
