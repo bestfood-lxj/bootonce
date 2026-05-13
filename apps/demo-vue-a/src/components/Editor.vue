@@ -42,10 +42,9 @@ const valueHtml = ref('<p>hello</p>');
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   setTimeout(() => {
-    console.log(editorRef)
-    SlateTransforms.insertNodes(
-      editorRef.value,
-      [
+    console.log(editorRef);
+    var arg1 = editorRef.value;
+    var arg2 = [
         {
           type: 'aicon',
           icon: 'svg-icon:delete',
@@ -61,9 +60,9 @@ onMounted(() => {
         //   type: 'attachment'
         // },
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
-      ],
-      { at: SlateEditor.end(editorRef.value, []) }
-    );
+      ];
+    var arg3 = { at: SlateEditor.end(editorRef.value, []) };
+    SlateTransforms.insertNodes(arg1, arg2, arg3 );
   }, 2000)
 });
 
