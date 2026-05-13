@@ -50,6 +50,7 @@ onMounted(() => {
           icon: 'svg-icon:delete',
           size: 16,
           color: 'red',
+          text: 'if (Node$1.isText(_node)) {',
           children: [{ text: '' }], // inline void 节点必须有 children
         },
         {
