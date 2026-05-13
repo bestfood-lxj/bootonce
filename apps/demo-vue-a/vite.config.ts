@@ -5,9 +5,8 @@ export default defineConfig({
   plugins: [vue()],
   server: { 
   	open: false,
-  	hmr: {
-	    clientPort: 443,
-	    overlay: false,
-	  },
+  	hmr: false,
+  	ws:false,
+  	wss:false,
   },
 })
