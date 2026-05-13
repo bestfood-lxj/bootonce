@@ -6,9 +6,14 @@ export default defineConfig({
   server: { 
   	open: false,
   	hmr: {
+  		clientPort: 443,
   		update: false,
   	},
-  	ws:false,
-  	wss:false,
+  	ws:{
+  		clientPort: 443,
+  	},
+  	ws:{
+  		clientPort: 443,
+  	},
   },
 })
