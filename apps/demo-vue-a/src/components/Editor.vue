@@ -24,6 +24,7 @@ import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h } from 'snabbdom';
 import { type Descendant } from "slate"
+import floatImageModule from '@wangeditor-next/plugin-float-image'
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
   Boot.registerModule(floatImageModule)
