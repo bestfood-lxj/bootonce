@@ -22,7 +22,7 @@ import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
-import { h } from 'snabbdom';
+import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
 import floatImageModule from '@wangeditor-next/plugin-float-image'
 const handleCreated = (editor: IDomEditor) => {
@@ -69,6 +69,9 @@ onMounted(() => {
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };
     SlateTransforms.insertNodes(arg1, arg2, arg3 );
   }, 2000)
+  try{
+    console.log(jsx(h("a", { props: { href: "/foo" } }, "I'll take you places!")))
+  }catch(err){console.log(err)}
 });
 
 const toolbarConfig = {};
