@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@wangeditor-next/editor": "workspace:*",
+    "@wangeditor-next/plugin-float-image": "workspace",
     "@wangeditor-next/editor-for-vue": "latest",
     "vue": "^3.2.0"
   },

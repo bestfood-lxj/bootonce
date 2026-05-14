@@ -2,7 +2,7 @@ import './style.css'
 import { h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
-
+import floatImageModule from 'wangeditor-plugin-float-image'
 const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
@@ -24,7 +24,7 @@ const renderIcon = (elemNode: any) => {
     ])
   ]);
 }
-Boot.registerModule({
+Boot.registerRenderElem({
   renderElems: [
     {
       type: 'aicon',
@@ -46,7 +46,9 @@ const renderElemConf = {
   renderElem: renderAttachment,
 }
 Boot.registerRenderElem(renderElemConf)
-
+// 注册。要在创建编辑器之前注册，且只能注册一次，不可重复注册。
+console.log(floatImageModule)
+Boot.registerModule(floatImageModule)
 import App from './App.vue'
 
 createApp(App).mount('#app')
