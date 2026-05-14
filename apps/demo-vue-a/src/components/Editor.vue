@@ -70,7 +70,27 @@ onMounted(() => {
 });
 
 const toolbarConfig = {};
-const editorConfig = { placeholder: '请输入内容...' };
+const editorConfig = {
+  placeholder: '请输入内容...',
+  hoverbarKeys: {
+    // 在编辑器中，选中链接文本时，要弹出的菜单
+    link: {
+      menuKeys: [ // 默认的配置可以通过 `editor.getConfig().hoverbarKeys.image` 获取
+        'imageWidth30',
+        'imageWidth50',
+        'imageWidth100',
+        '|',               // 分割符
+        'imageFloatNone',  // 增加 '图片浮动' 菜单
+        'imageFloatLeft',
+        'imageFloatRight',
+        '|',               // 分割符
+        'editImage',
+        'viewImageLink',
+        'deleteImage',
+      ],
+    },
+  },
+};
 
 // 组件销毁时，也及时销毁编辑器，重要！
 onBeforeUnmount(() => {
