@@ -2,7 +2,7 @@ import './style.css'
 import { h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
-import floatImageModule from 'wangeditor-plugin-float-image'
+import floatImageModule from '@wangeditor-next/plugin-float-image'
 const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
