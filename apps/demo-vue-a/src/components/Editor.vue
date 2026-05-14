@@ -27,13 +27,12 @@ import { type Descendant } from "slate"
 import floatImageModule from '@wangeditor-next/plugin-float-image'
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
-  Boot.registerModule(floatImageModule)
 }
 
 
 
 
-
+Boot.registerModule(floatImageModule)
 
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
