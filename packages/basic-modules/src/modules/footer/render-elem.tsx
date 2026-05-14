@@ -6,7 +6,7 @@
 import { IDomEditor } from '@wangeditor-next/core'
 import { Element as SlateElement } from 'slate'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { jsx, VNode } from 'snabbdom'
+import { jsx, VNode,h } from 'snabbdom'
 
 /**
  * render bottom elem
@@ -20,9 +20,24 @@ function renderParagraph(
   children: VNode[] | null,
   _editor: IDomEditor,
 ): VNode {
-  const vnode = <footer>{children}</footer>
+	return h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ]),
+    ...(children||[]),
+  ]);
 
-  return vnode
+  //const vnode = <footer>{children}</footer>
+  //return vnode
 }
 
 export const renderParagraphConf = {
