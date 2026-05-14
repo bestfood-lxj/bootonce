@@ -26,6 +26,7 @@ import { h } from 'snabbdom';
 import { type Descendant } from "slate"
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
+  Boot.registerModule(floatImageModule)
 }
 
 
