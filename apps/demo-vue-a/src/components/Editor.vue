@@ -63,6 +63,7 @@ onMounted(() => {
         // {
         //   type: 'attachment'
         // },
+        { type: 'bottom', children: [{ text: 'bottom is footer!!' }] }
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
       ];
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };
