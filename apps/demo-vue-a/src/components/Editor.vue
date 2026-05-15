@@ -49,7 +49,7 @@ onMounted(() => {
     var arg2 = [
         {
           type: 'attachment',
-          children: [{ text: '' }]
+          children: [{ text: 'attachment text' }]
         },
         {
           type: 'aicon',
@@ -57,7 +57,7 @@ onMounted(() => {
           size: 16,
           color: 'red',
           text: 'if (Node$1.isText(_node)) {',
-          children: [{ text: '' }], // inline void 节点必须有 children
+          children: [{ text: 'aicon text' }], // inline void 节点必须有 children
         },
         
         // {
