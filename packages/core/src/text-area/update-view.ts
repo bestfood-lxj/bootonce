@@ -106,7 +106,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
     NODE_TO_VNODE.set(node, [i, vnode])
     return vnode
   })
-
+  console.log("important!!,",newVnode);
   let textareaElem
   let isFirstPatch = IS_FIRST_PATCH.get(textarea)
 
