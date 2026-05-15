@@ -67,6 +67,7 @@ function genRootElem(elemId: string, _readOnly = false): Dom7Array {
  * @param editor editor
  */
 function updateView(textarea: TextArea, editor: IDomEditor) {
+	debugger
   const $scroll = textarea.$scroll
   const elemId = genElemId(textarea.id)
   const { readOnly, autoFocus } = editor.getConfig()
