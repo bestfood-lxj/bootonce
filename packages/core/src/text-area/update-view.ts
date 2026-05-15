@@ -121,7 +121,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
 
     // 再生成 patch 函数，并执行
     const patchFn = genPatchFn()
-
+    //patch(container, vnode);
     patchFn(textareaElem, newVnode)
 
     // 存储相关信息
@@ -134,7 +134,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
 
     if (curVnode == null || patchFn == null) { return }
     textareaElem = curVnode.elm
-
+  	//patch(container, vnode);
     patchFn(curVnode, newVnode)
   }
 
