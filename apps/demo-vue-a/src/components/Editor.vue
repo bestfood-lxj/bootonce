@@ -69,9 +69,7 @@ onMounted(() => {
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };
     SlateTransforms.insertNodes(arg1, arg2, arg3 );
   }, 2000)
-  try{
-    console.log(jsx(h("a", { props: { href: "/foo" } }, "I'll take you places!")))
-  }catch(err){console.log(err)}
+
 });
 
 const toolbarConfig = {};
