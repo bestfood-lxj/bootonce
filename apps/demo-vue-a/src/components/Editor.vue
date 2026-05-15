@@ -14,13 +14,14 @@
     <div style="margin-top: 10px">
       <textarea v-model="valueHtml" readonly style="width: 100%; height: 200px; outline: none"></textarea>
     </div>
+    <div id="demoZz"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
-import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
+import { Boot, SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
@@ -68,6 +69,12 @@ onMounted(() => {
       ];
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };
     SlateTransforms.insertNodes(arg1, arg2, arg3 );
+
+    //xx
+    var patchFn = genPatchFn();
+    var vnode = h("h1", "Headline");
+    var container = document.querySelector("demoZz");
+    patchFn(container,vnode);
   }, 2000)
 
 });

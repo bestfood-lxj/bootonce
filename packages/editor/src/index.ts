@@ -35,6 +35,7 @@ export type {
   IUploadConfig,
   StyleClassTokenType,
   TextStyleMode,
+  genPatchFn,
 } from '@wangeditor-next/core'
 export {
   // 第三方模块 - 上传时用到

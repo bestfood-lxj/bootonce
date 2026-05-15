@@ -51,6 +51,7 @@ export * from './i18n/index'
 
 // dom utils
 export * from './utils/dom'
+export {genPatchFn,} from './utils/vdom'
 
 export interface IModuleConf {
   // 注册菜单
