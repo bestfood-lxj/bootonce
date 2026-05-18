@@ -9,7 +9,7 @@ const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
   console.log('run r............................') 
-  return h("div", [
+  let vnode= h("div", [
     h("svg", { attrs: { width: 100, height: 100 } }, [
       h("circle", {
         attrs: {
@@ -23,6 +23,8 @@ const renderIcon = (elemNode: any) => {
       })
     ])
   ]);
+  console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
+  return vnode
 }
 Boot.registerRenderElem({
   renderElems: [

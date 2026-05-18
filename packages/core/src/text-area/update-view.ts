@@ -67,7 +67,6 @@ function genRootElem(elemId: string, _readOnly = false): Dom7Array {
  * @param editor editor
  */
 function updateView(textarea: TextArea, editor: IDomEditor) {
-	debugger
   const $scroll = textarea.$scroll
   const elemId = genElemId(textarea.id)
   const { readOnly, autoFocus } = editor.getConfig()
@@ -106,7 +105,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
     NODE_TO_VNODE.set(node, [i, vnode])
     return vnode
   })
-  console.log("important!!,",newVnode);
+
   let textareaElem
   let isFirstPatch = IS_FIRST_PATCH.get(textarea)
 
@@ -121,8 +120,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
 
     // 再生成 patch 函数，并执行
     const patchFn = genPatchFn()
-    console.log("........再生成 patch 函数，并执行",genPatchFn.toString(),patchFn)
-    //patch(container, vnode);
+
     patchFn(textareaElem, newVnode)
 
     // 存储相关信息
@@ -135,17 +133,8 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
 
     if (curVnode == null || patchFn == null) { return }
     textareaElem = curVnode.elm
-  	//patch(container, vnode);
-  	let tmpNode = newVnode
-  	console.log("TEXTAREA_TO_PATCH_FN.get(textarea)",textarea,TEXTAREA_TO_PATCH_FN,h,newVnode,function(abcdd){tmpNode=abcdd});
-  	console.log("10000");
-  	console.log("20000");
-  	console.log("30000");
-  	debugger;
-  	console.log("00001");
-  	console.log("00002");
-  	console.log("00003");
-    patchFn(curVnode, tmpNode);
+
+    patchFn(curVnode, newVnode)
   }
 
   if (textareaElem == null) {
