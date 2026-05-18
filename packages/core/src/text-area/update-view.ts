@@ -121,7 +121,7 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
 
     // 再生成 patch 函数，并执行
     const patchFn = genPatchFn()
-    console.log("........再生成 patch 函数，并执行",genPatchFn.toString())
+    console.log("........再生成 patch 函数，并执行",genPatchFn.toString(),patchFn)
     //patch(container, vnode);
     patchFn(textareaElem, newVnode)
 
