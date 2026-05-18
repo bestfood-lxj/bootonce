@@ -35,7 +35,6 @@ export type {
   IUploadConfig,
   StyleClassTokenType,
   TextStyleMode,
-  genPatchFn,
 } from '@wangeditor-next/core'
 export {
   // 第三方模块 - 上传时用到
@@ -52,6 +51,7 @@ export {
   i18nGetResources,
   t,
   Toolbar,
+  genPatchFn,
 } from '@wangeditor-next/core'
 
 // 导出 slate API 和接口 （需重命名，加 `Slate` 前缀）
