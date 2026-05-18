@@ -35,7 +35,7 @@ function renderParagraph(
     ]),
     ...(children||[]),
   ]);
-  console.log("basic-modules modules footer render-elem.tsx:::",vnode)
+  console.log("basic-modules modules footer render-elem.tsx:::",JSON.stringify(vnode))
 
   //const vnode = <footer>{children}</footer>
   return vnode
