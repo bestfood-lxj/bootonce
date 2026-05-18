@@ -74,8 +74,9 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
   // 生成 newVnode
   const newVnode = genRootVnode(elemId, readOnly)
   const content = editor.children || []
-
+  debugger;
   newVnode.children = content.map((node, i) => {
+  	console.log("content.map",node,i)
     if (NODE_TO_VNODE.has(node)) {
       const cachedValue = NODE_TO_VNODE.get(node)
 
@@ -93,9 +94,9 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
       }
     }
     const vnode = node2Vnode(node, i, editor, editor)
-
+    console.log('node2Vnode',vnode)
     normalizeVnodeData(vnode) // 整理 vnode.data 以符合 snabbdom 的要求
-
+    console.log('normalizeVnodeData',vnode)
     const { skipCacheTypes = ['list-item'] } = editor.getConfig()
 
     if (Element.isElement(node) && skipCacheTypes.includes(node.type)) {
