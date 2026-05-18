@@ -138,8 +138,13 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
   	//patch(container, vnode);
   	let tmpNode = newVnode
   	console.log("TEXTAREA_TO_PATCH_FN.get(textarea)",textarea,TEXTAREA_TO_PATCH_FN,h,newVnode,function(abcdd){tmpNode=abcdd});
-
+  	console.log("10000");
+  	console.log("20000");
+  	console.log("30000");
   	debugger;
+  	console.log("00001");
+  	console.log("00002");
+  	console.log("00003");
     patchFn(curVnode, tmpNode);
   }
 
