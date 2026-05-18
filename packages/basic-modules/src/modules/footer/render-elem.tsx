@@ -20,7 +20,7 @@ function renderParagraph(
   children: VNode[] | null,
   _editor: IDomEditor,
 ): VNode {
-	return h("div", [
+	let vnode = h("div", [
     h("svg", { attrs: { width: 100, height: 100 } }, [
       h("circle", {
         attrs: {
@@ -35,9 +35,9 @@ function renderParagraph(
     ]),
     ...(children||[]),
   ]);
-
+  console.log("basic-modules modules footer render-elem.tsx:::",vnode)
   //const vnode = <footer>{children}</footer>
-  //return vnode
+  return vnode
 }
 
 export const renderParagraphConf = {
