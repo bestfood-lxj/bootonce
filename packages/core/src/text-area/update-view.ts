@@ -136,8 +136,10 @@ function updateView(textarea: TextArea, editor: IDomEditor) {
     if (curVnode == null || patchFn == null) { return }
     textareaElem = curVnode.elm
   	//patch(container, vnode);
-  	console.log("TEXTAREA_TO_PATCH_FN.get(textarea)",textarea,TEXTAREA_TO_PATCH_FN,h)
-    patchFn(curVnode, newVnode)
+  	console.log("TEXTAREA_TO_PATCH_FN.get(textarea)",textarea,TEXTAREA_TO_PATCH_FN,h,newVnode,function(abcdd){newVnode=abcdd});
+
+  	debugger;
+    patchFn(curVnode, newVnode);
   }
 
   if (textareaElem == null) {
