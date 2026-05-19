@@ -27,6 +27,7 @@ const renderIcon = (elemNode: any) => {
   console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
   return vnode
 }
+Boot.registerModule(wangEditorUpperModule)
 Boot.registerModule({
   renderElems: [
     {
@@ -49,7 +50,7 @@ const renderElemConf = {
   renderElem: renderAttachment,
 }
 Boot.registerRenderElem(renderElemConf)
-Boot.registerModule(wangEditorUpperModule)
+
 // 注册。要在创建编辑器之前注册，且只能注册一次，不可重复注册。
 console.log(floatImageModule)
 //Boot.registerModule(floatImageModule)
