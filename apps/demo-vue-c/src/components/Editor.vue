@@ -64,7 +64,7 @@ onMounted(() => {
         // {
         //   type: 'attachment'
         // },
-        { type: 'upper', children: [{ text: 'upper is header!!' }] },
+        { type: 'upper', children: [{ text: 'demo-c:::::upper is header!!' }] },
         { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
       ];
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };

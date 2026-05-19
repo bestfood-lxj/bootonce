@@ -1,9 +1,38 @@
 import './style.css'
-import { h } from 'snabbdom';
+import { VNode,h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import floatImageModule from '@wangeditor-next/plugin-float-image'
-import wangEditorUpperModule from './section'
+import { Element as SlateElement } from 'slate'
+function renderParagraph(
+  elemNode: SlateElement,
+  children: VNode[] | null,
+  _editor: IDomEditor,
+): VNode {
+	let vnode = h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 10,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ]),
+    ...(children||[]),
+  ]);
+  console.log("basic-modules modules section render-elem.tsx:::",JSON.stringify(vnode))
+
+  //const vnode = <section>{children}</section>
+  return vnode
+}
+const renderParagraphConf = {
+  type: 'upper',
+  renderElem: renderParagraph,
+}
 const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
@@ -27,7 +56,7 @@ const renderIcon = (elemNode: any) => {
   console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
   return vnode
 }
-Boot.registerModule(wangEditorUpperModule)
+Boot.registerModule({renderElems: [renderParagraphConf],})
 Boot.registerModule({
   renderElems: [
     {
