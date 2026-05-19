@@ -38,7 +38,7 @@ export function genPatchFn(): PatchFn {
 }
 
 // vnode.data 保留属性，参考 snabbdom VNodeData
-const DATA_PRESERVE_KEYS = ['props', 'attrs', 'style', 'dataset', 'on', 'hook']
+const DATA_PRESERVE_KEYS = ['props', 'attrs', 'style', 'dataset', 'on', 'hook','ns']
 
 /**
  * 整理 vnode.data ，将暴露出来的零散属性（如 id className data-xxx）放在 data.props 或 data.dataset
