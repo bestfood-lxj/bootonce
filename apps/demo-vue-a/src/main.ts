@@ -3,7 +3,7 @@ import { h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import floatImageModule from '@wangeditor-next/plugin-float-image'
-import wangEditorUpperModule from './section'
+//import wangEditorUpperModule from './section'
 const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
@@ -27,7 +27,7 @@ const renderIcon = (elemNode: any) => {
   console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
   return vnode
 }
-Boot.registerModule(wangEditorUpperModule)
+//Boot.registerModule(wangEditorUpperModule)
 Boot.registerModule({
   renderElems: [
     {
