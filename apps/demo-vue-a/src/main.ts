@@ -3,6 +3,7 @@ import { h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import floatImageModule from '@wangeditor-next/plugin-float-image'
+import wangEditorUpperModule from './header'
 const renderIcon = (elemNode: any) => {
   console.log('run r............................') 
   console.log('run r............................') 
@@ -26,7 +27,7 @@ const renderIcon = (elemNode: any) => {
   console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
   return vnode
 }
-Boot.registerRenderElem({
+Boot.registerModule({
   renderElems: [
     {
       type: 'aicon',
@@ -48,6 +49,7 @@ const renderElemConf = {
   renderElem: renderAttachment,
 }
 Boot.registerRenderElem(renderElemConf)
+Boot.registerModule(wangEditorUpperModule)
 // 注册。要在创建编辑器之前注册，且只能注册一次，不可重复注册。
 console.log(floatImageModule)
 //Boot.registerModule(floatImageModule)
