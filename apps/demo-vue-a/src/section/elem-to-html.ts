@@ -7,9 +7,9 @@ import { Element } from 'slate'
 
 function pToHtml(elem: Element, childrenHtml: string): string {
   if (childrenHtml === '') {
-    return '<header><br></header>'
+    return '<section><br></section>'
   }
-  return `<header>${childrenHtml}</header>`
+  return `<section>${childrenHtml}</section>`
 }
 
 export const pToHtmlConf = {

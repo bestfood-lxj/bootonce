@@ -1,11 +1,19 @@
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-	server: {
-  	allowedHosts:true,
-  	port: 5173,
-  },
   plugins: [vue()],
+  server: { 
+  	open: false,
+  	hmr: {
+  		clientPort: 443,
+  		update: false,
+  	},
+  	ws:{
+  		clientPort: 443,
+  	},
+  	ws:{
+  		clientPort: 443,
+  	},
+  },
 })

@@ -103,6 +103,6 @@ function parseParagraphHtml(
 }
 
 export const parseParagraphHtmlConf = {
-  selector: 'header:not([data-w-e-type])', // data-w-e-type 属性，留给自定义元素，保证扩展性
+  selector: 'section:not([data-w-e-type])', // data-w-e-type 属性，留给自定义元素，保证扩展性
   parseElemHtml: parseParagraphHtml,
 }

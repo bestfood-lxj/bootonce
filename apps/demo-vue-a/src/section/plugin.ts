@@ -30,7 +30,7 @@ function deleteHandler(newEditor: IDomEditor): boolean {
 
   if (!SlateText.isText(children[0])) { return false } // n.children 不是 text （如 table），则不再继续判断
 
-  // 至此，就命中了一个（非 upper）+（children 都是 text）+（内容为空）的顶级 node ，如 header blockQuote 等
+  // 至此，就命中了一个（非 upper）+（children 都是 text）+（内容为空）的顶级 node ，如 section blockQuote 等
   // 然后，将其却换为 upper
   Transforms.setNodes(newEditor, {
     type: 'upper',
@@ -44,7 +44,7 @@ function withParagraph<T extends IDomEditor>(editor: T): T {
   } = editor
   const newEditor = editor
 
-  // 删除非 p 的文本 elem（如 header blockQuote 等），删除没有内容时，切换为 p
+  // 删除非 p 的文本 elem（如 section blockQuote 等），删除没有内容时，切换为 p
   newEditor.deleteBackward = unit => {
     const res = deleteHandler(newEditor)
 

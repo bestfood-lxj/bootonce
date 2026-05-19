@@ -1,26 +1,24 @@
 {
-  "name": "editor-test",
+  "name": "@wangeditor-next/demo-vue-d",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.6",
   "type": "module",
   "scripts": {
-    "pnpm:dev": "pnpm run dev",
-    "dev": "vite --host 0.0.0.0",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "dev": "vite --force",
+    "dev:all": "pnpm exec concurrently \"pnpm --dir ../../packages/editor dev-watch\" \"pnpm run dev\"",
+    "build": "vite build",
+    "smoke": "pnpm --dir ../.. exec turbo build --filter=@wangeditor-next/demo-vue3"
   },
   "dependencies": {
-    "@wangeditor-next/editor": "^5.6.43",
-    "@wangeditor-next/editor-for-vue": "^5.1.14",
-    "snabbdom": "^3.6.3",
-    "vue": "^3.5.18"
+    "@wangeditor-next/editor": "workspace:*",
+    "@wangeditor-next/plugin-float-image": "workspace",
+    "@wangeditor-next/editor-for-vue": "latest",
+    "vue": "^3.2.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "@vue/tsconfig": "^0.7.0",
-    "sass-embedded": "^1.91.0",
-    "typescript": "~5.8.3",
-    "vite": "^7.1.2",
-    "vue-tsc": "^3.0.5"
+    "@vitejs/plugin-vue": "^2.3.4",
+    "typescript": "~4.5.5",
+    "vite": "^2.9.16",
+    "vue-tsc": "1.0.24"
   }
 }

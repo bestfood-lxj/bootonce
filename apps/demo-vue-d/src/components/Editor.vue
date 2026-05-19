@@ -4,7 +4,6 @@
       <button @click="insertText">insert text</button>
       <button @click="printHtml">print html</button>
       <button @click="disable">disable</button>
-      <div ref="mountEl" class="snabbdom-root"></div>
     </div>
     <div style="border: 1px solid #ccc; margin-top: 10px">
       <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" mode="default"
@@ -15,146 +14,106 @@
     <div style="margin-top: 10px">
       <textarea v-model="valueHtml" readonly style="width: 100%; height: 200px; outline: none"></textarea>
     </div>
+    <div id="demoZz"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
-import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
+import { Boot, SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
-import { init, h, classModule, styleModule, eventListenersModule, attributesModule } from 'snabbdom'
-
+import { h,jsx } from 'snabbdom';
+import { type Descendant } from "slate"
+import floatImageModule from '@wangeditor-next/plugin-float-image'
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
-const patchVue = init([attributesModule,classModule, styleModule, eventListenersModule,])
-type Icon = {
-  type: 'icon'
-  icon: string
-  size?: number
-  color?: string
-  svgClass?: string
-  onClick?: () => void
-  children: any[]
-}
 
-declare module 'slate' {
-  interface CustomTypes {
-    Element: Icon
-  }
-}
-function buildVNode() {
-  return h("div", [
-    h("a", { props: { href: "/foo" } }, "I'll take you places!"),
-    h("svg", { attrs: { width: 100, height: 100 } }, [
-      h("circle", {
-        attrs: {
-          cx: 50,
-          cy: 50,
-          r: 40,
-          stroke: "green",
-          "stroke-width": 4,
-          fill: "yellow"
-        }
-      })
-    ])
-  ]);
-}
-const renderIcon = (elemNode: any) => {
-  const {
-    icon,
-    size = 16,
-    color = 'inherit',
-    svgClass = '',
-    onClick = () => { },
-  } = elemNode;
 
-  const getIconifyStyle = () => {
-    const style = {
-      'font-size': `${size}px`,
-      height: '1em',
-      color,
-    };
-    return Object.entries(style)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(';');
-  };
-  const getSvgClass = () => {
-    return `iconify ${svgClass ?? ''}`;
-  };
-  return h(
-    'i',
-    {
-      attrs: {
-        class: 'el-icon v-icon',
-        contenteditable: false,
-        style: `font-size: ${size}px;color: ${color}`,
-      },
-      props: {
-        onClick: onClick,
-      },
-    },
-    [
-      h("a", { props: { href: "/foo" } }, "I'll take you places!"),
-      h("div",{attrs: {name:"boxabc"}}, "box a b c"),
-h("svg", { attrs: { width: 100, height: 100 } }, [
-  h("circle", {
-    attrs: {
-      cx: 50,
-      cy: 50,
-      r: 40,
-      stroke: "green",
-      "stroke-width": 4,
-      fill: "yellow"
-    }
-  })
-]),     
-    ]
-  );
-};
-Boot.registerModule({
-  renderElems: [
-    {
-      type: 'icon',
-      renderElem: renderIcon,
-    },
-  ],
-});
+
+
+Boot.registerModule(floatImageModule)
+
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
 
 // 内容 HTML
 const valueHtml = ref('<p>hello</p>');
-const mountEl = ref(null)
+
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-  setTimeout(()=>{
-    SlateTransforms.insertNodes(
-      editorRef.value,
-      [
+  setTimeout(() => {
+    console.log(editorRef);
+    editorRef.value.isVoid =(element) =>( ['aicon','attachment'].includes(element.type))
+    var arg1 = editorRef.value;
+    var arg2 = [
         {
-          type: 'icon',
+          type: 'attachment',
+          children: [{ text: 'attachment text' }]
+        },
+        {
+          type: 'aicon',
           icon: 'svg-icon:delete',
           size: 16,
           color: 'red',
-          children: [{ text: '44' }], // inline void 节点必须有 children
+          text: 'if (Node$1.isText(_node)) {',
+          children: [{ text: 'aicon text' }], // inline void 节点必须有 children
         },
-        { type: 'paragraph', children: [{ text: 'aaa' }] },
-        { type: 'div', children: [{ text: 'aadda' }] },
-      ],
-      { at: SlateEditor.end(editorRef.value, []) }
-    );
-    patchVue(mountEl.value, buildVNode())
-    setTimeout(()=>{
-      patchVue(document.querySelector("[name='boxabc']"),buildVNode())
-    },1000)
-  },2000)
-  
+        
+        // {
+        //   type: 'attachment'
+        // },
+        { type: 'upper', children: [{ text: 'upper is header!!' }] },
+        { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
+      ];
+    var arg3 = { at: SlateEditor.end(editorRef.value, []) };
+    SlateTransforms.insertNodes(arg1, arg2, arg3 );
+
+    //xx
+    var patchFn = genPatchFn();
+    var vnode = h("div", [
+      h("svg", { attrs: { width: 100, height: 100 } }, [
+        h("circle", {
+          attrs: {
+            cx: 50,
+            cy: 50,
+            r: 40,
+            stroke: "green",
+            "stroke-width": 4,
+            fill: "yellow"
+          }
+        })
+      ])
+    ]);
+    var container = document.querySelector("#demoZz");
+    patchFn(container,vnode);
+  }, 2000)
+
 });
 
 const toolbarConfig = {};
-const editorConfig = { placeholder: '请输入内容...' };
+const editorConfig = {
+  placeholder: '请输入内容...',
+  hoverbarKeys: {
+    // 在编辑器中，选中链接文本时，要弹出的菜单
+    link: {
+      menuKeys: [ // 默认的配置可以通过 `editor.getConfig().hoverbarKeys.image` 获取
+        'imageWidth30',
+        'imageWidth50',
+        'imageWidth100',
+        '|',               // 分割符
+        'imageFloatNone',  // 增加 '图片浮动' 菜单
+        'imageFloatLeft',
+        'imageFloatRight',
+        '|',               // 分割符
+        'editImage',
+        'viewImageLink',
+        'deleteImage',
+      ],
+    },
+  },
+};
 
 // 组件销毁时，也及时销毁编辑器，重要！
 onBeforeUnmount(() => {

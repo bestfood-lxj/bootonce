@@ -35,9 +35,9 @@ function renderParagraph(
     ]),
     ...(children||[]),
   ]);
-  console.log("basic-modules modules header render-elem.tsx:::",JSON.stringify(vnode))
+  console.log("basic-modules modules section render-elem.tsx:::",JSON.stringify(vnode))
 
-  //const vnode = <header>{children}</header>
+  //const vnode = <section>{children}</section>
   return vnode
 }
 
