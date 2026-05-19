@@ -4,7 +4,6 @@ import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
 import floatImageModule from '@wangeditor-next/plugin-float-image'
 import { Element as SlateElement } from 'slate'
-import wangEditorUpperModule from './header'
 function renderParagraph(
   elemNode: SlateElement,
   children: VNode[] | null,
