@@ -38,7 +38,7 @@ function genCommonConf(format) {
       }),
       nodeResolve({
         browser: true, // 重要
-        mainFields: format === 'esm' ? ['module', 'main'] : ['main'],
+        mainFields:  ['module', 'main'],
         extensions,
       }),
       commonjs({

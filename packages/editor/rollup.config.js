@@ -9,7 +9,7 @@ function createDualFormatConfig(input, umdFile, esmFile, name) {
     input,
     output: {
       file: umdFile,
-      format: 'cjs',
+      format: 'umd',
       name,
     },
   })
@@ -20,7 +20,7 @@ function createDualFormatConfig(input, umdFile, esmFile, name) {
     input,
     output: {
       file: esmFile,
-      format: 'es',
+      format: 'esm',
       name,
     },
   })
