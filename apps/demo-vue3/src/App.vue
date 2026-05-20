@@ -42,7 +42,10 @@
 import '@wangeditor-next/editor/dist/css/style.css'
 
 import type { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor-next/editor'
+import { Boot, SlateEditor, SlateTransforms, genPatchFn } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue'
+import { h,jsx, VNode } from 'snabbdom';
+import { Element as SlateElement } from 'slate'
 import {
   defineComponent,
   onBeforeUnmount,
@@ -55,7 +58,36 @@ const initialHtml = [
   '<p>这个 demo 的源码位于 <code>apps/demo-vue3</code>。</p>',
   '<p>推荐把 StackBlitz 模板当成这里的派生产物，而不是反向维护。</p>',
 ].join('')
+function renderParagraph(
+  elemNode: SlateElement,
+  children: VNode[] | null,
+  _editor: IDomEditor,
+): VNode {
+  let vnode = h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 30,
+          stroke: "blue",
+          "stroke-width": 8,
+          fill: "red"
+        }
+      })
+    ]),
+    ...(children||[]),
+  ]);
+  console.log("basic-modules modules section render-elem.tsx:::",JSON.stringify(vnode))
 
+  //const vnode = <section>{children}</section>
+  return vnode
+}
+const renderParagraphConf = {
+  type: 'upper',
+  renderElem: renderParagraph,
+}
+Boot.registerModule({renderElems: [renderParagraphConf],})
 export default defineComponent({
   name: 'DemoVue3App',
   components: {
