@@ -25,7 +25,9 @@ import { SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wang
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
+import wangEditorUpperModule from '../section'
 
+Boot.registerModule(wangEditorUpperModule)
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }

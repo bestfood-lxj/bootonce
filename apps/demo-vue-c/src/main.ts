@@ -2,7 +2,7 @@ import './style.css'
 import { VNode,h } from 'snabbdom';
 import { createApp } from 'vue'
 import { Boot, SlateEditor, SlateTransforms, type IDomEditor } from '@wangeditor-next/editor';
-import floatImageModule from '@wangeditor-next/plugin-float-image'
+
 import { Element as SlateElement } from 'slate'
 function renderParagraph(
   elemNode: SlateElement,
@@ -80,9 +80,7 @@ const renderElemConf = {
 }
 Boot.registerRenderElem(renderElemConf)
 
-// 注册。要在创建编辑器之前注册，且只能注册一次，不可重复注册。
-console.log(floatImageModule)
-//Boot.registerModule(floatImageModule)
+
 import App from './App.vue'
 
 createApp(App).mount('#app')

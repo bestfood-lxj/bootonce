@@ -25,15 +25,86 @@ import { Boot, SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from 
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
-import floatImageModule from '@wangeditor-next/plugin-float-image'
+function renderParagraph(
+  elemNode: SlateElement,
+  children: VNode[] | null,
+  _editor: IDomEditor,
+): VNode {
+  let vnode = h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 30,
+          stroke: "blue",
+          "stroke-width": 8,
+          fill: "red"
+        }
+      })
+    ]),
+    ...(children||[]),
+  ]);
+  console.log("basic-modules modules section render-elem.tsx:::",JSON.stringify(vnode))
+
+  //const vnode = <section>{children}</section>
+  return vnode
+}
+const renderParagraphConf = {
+  type: 'upper',
+  renderElem: renderParagraph,
+}
+const renderIcon = (elemNode: any) => {
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
+  console.log('run r............................') 
+  let vnode= h("div", [
+    h("svg", { attrs: { width: 100, height: 100 } }, [
+      h("circle", {
+        attrs: {
+          cx: 50,
+          cy: 50,
+          r: 40,
+          stroke: "green",
+          "stroke-width": 4,
+          fill: "yellow"
+        }
+      })
+    ])
+  ]);
+  console.log("main .ts vnode renderIcon--",JSON.stringify(vnode))
+  return vnode
+}
+Boot.registerModule({renderElems: [renderParagraphConf],})
+Boot.registerModule({
+  renderElems: [
+    {
+      type: 'aicon',
+      renderElem: renderIcon,
+    },
+  ],
+});
+
+
+function renderAttachment(elem, children, editor) {   
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  console.log("renderAttachment ......")
+  return  h("a", { props: { href: "/bar" } }, "I'll take you places!")
+}
+const renderElemConf = {
+  type: 'attachment', // 新元素 type ，重要！！！
+  renderElem: renderAttachment,
+}
+Boot.registerRenderElem(renderElemConf)
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
 
 
-
-
-Boot.registerModule(floatImageModule)
 
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
@@ -53,7 +124,7 @@ onMounted(() => {
           children: [{ text: 'attachment text' }]
         },
         {
-          type: 'bluec',
+          type: 'aicon',
           children: [{ text: 'aicon text' }], // inline void 节点必须有 children
         },
         
