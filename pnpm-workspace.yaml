@@ -2,3 +2,5 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'shared/*'
+hoist:
+  - '@wangeditor-next/editor'
