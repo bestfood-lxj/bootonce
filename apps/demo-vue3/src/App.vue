@@ -48,6 +48,7 @@ import { h,jsx, VNode } from 'snabbdom';
 import { Element as SlateElement } from 'slate'
 import {
   defineComponent,
+  onMounted,
   onBeforeUnmount,
   ref,
   shallowRef,
@@ -101,7 +102,39 @@ export default defineComponent({
     const editorConfig: Partial<IEditorConfig> = {
       placeholder: '请输入内容...',
     }
+    onMounted(()=>{
+      setTimeout(()=>{
 
+         console.log(editorRef);
+
+    var arg1 = editorRef.value;
+    var arg2 = [
+        {
+          type: 'attachment',
+          children: [{ text: 'attachment text' }]
+        },
+        {
+          type: 'aicon',
+          children: [{ text: 'aicon text' }], // inline void 节点必须有 children
+        },
+        
+        // {
+        //   type: 'attachment'
+        // },
+        { type: 'upper', children: [{ text: 'demo-c:::::upper is header!!' }] },
+        { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
+      ];
+    var arg3 = { at: SlateEditor.end(editorRef.value, []) };
+    SlateTransforms.insertNodes(arg1, arg2, arg3 );
+
+
+
+
+
+
+
+      },3000)
+    })
     onBeforeUnmount(() => {
       const editor = editorRef.value
 
