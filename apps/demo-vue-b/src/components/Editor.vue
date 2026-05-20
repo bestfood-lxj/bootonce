@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
-import { SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
+import { Boot,SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
