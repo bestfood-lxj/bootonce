@@ -48,7 +48,7 @@
     "smoke:demo:yjs:react": "pnpm --filter @wangeditor-next/demo-yjs-react run smoke",
     "smoke:demo:yjs:vue3": "pnpm --filter @wangeditor-next/demo-yjs-vue3 run smoke",
     "smoke:demos": "pnpm exec turbo build --filter=@wangeditor-next/demo-react --filter=@wangeditor-next/demo-vue3 --filter=@wangeditor-next/demo-yjs-react --filter=@wangeditor-next/demo-yjs-vue3",
-    "reinstall":" rm -fr node_modules && rm -fr .turbo && rm -fr husky && rm pnpm-lock.yaml && pnpm install"
+    "reinstall":" rm -fr node_modules && rm -fr .turbo && rm -fr husky && rm -f pnpm-lock.yaml && pnpm install"
   },
   "workspaces": [
     "apps/*",
