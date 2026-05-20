@@ -26,10 +26,10 @@ function renderParagraph(
         attrs: {
           cx: 50,
           cy: 50,
-          r: 10,
-          stroke: "green",
-          "stroke-width": 4,
-          fill: "yellow"
+          r: 40,
+          stroke: "blue",
+          "stroke-width": 20,
+          fill: "#EA4F16"
         }
       })
     ]),
