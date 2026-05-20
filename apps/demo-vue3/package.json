@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@wangeditor-next/editor": "workspace:*",
-    "@wangeditor-next/editor-for-vue": "latest",
+    "@wangeditor-next/editor-for-vue": "workspace:*",
     "vue": "^3.2.0"
   },
   "devDependencies": {
