@@ -6,3 +6,6 @@ packages:
 pnpm:
   overrides:
     '@wangeditor-next/editor': 'workspace:*'
+  # 另外，确保peerDependencies不会导致多个实例
+  strict-peer-dependencies: false
+  auto-install-peers: true
