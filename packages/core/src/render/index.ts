@@ -36,6 +36,7 @@ export type RenderElemFnType = (
 ) => VNode
 
 // 注册 render element 配置
+console.log("..........................................................................................................................0000 RENDER_ELEM_CONF={}")
 export const RENDER_ELEM_CONF: {
   [key: string]: RenderElemFnType // key 要和 node.type 对应 ！！！
 } = {}
@@ -55,5 +56,6 @@ export function registerRenderElemConf(conf: IRenderElemConf) {
 
   // 如果 key 重复了，就后者覆盖前者
   RENDER_ELEM_CONF[key] = renderElem
-  console.log("after run registerRenderElemConf::",Object.keys(RENDER_ELEM_CONF))
+  let arr = Object.keys(RENDER_ELEM_CONF);
+  console.log("after run registerRenderElemConf::",arr.length,arr,)
 }

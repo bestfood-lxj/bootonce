@@ -21,19 +21,17 @@
 <script setup lang="ts">
 import '@wangeditor-next/editor/dist/css/style.css';
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
-import { Boot, SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
+import { SlateEditor, SlateTransforms, genPatchFn ,type IDomEditor } from '@wangeditor-next/editor';
 import { Editor, Toolbar } from '@wangeditor-next/editor-for-vue';
 import { h,jsx } from 'snabbdom';
 import { type Descendant } from "slate"
-import floatImageModule from '@wangeditor-next/plugin-float-image'
+
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
 }
 
 
 
-
-Boot.registerModule(floatImageModule)
 
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
