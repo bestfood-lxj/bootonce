@@ -48,24 +48,9 @@ onMounted(() => {
     editorRef.value.isVoid =(element) =>( ['aicon','attachment'].includes(element.type))
     var arg1 = editorRef.value;
     var arg2 = [
-        {
-          type: 'attachment',
-          children: [{ text: 'attachment text' }]
-        },
-        {
-          type: 'aicon',
-          icon: 'svg-icon:delete',
-          size: 16,
-          color: 'red',
-          text: 'if (Node$1.isText(_node)) {',
-          children: [{ text: 'aicon text' }], // inline void 节点必须有 children
-        },
+       
         
-        // {
-        //   type: 'attachment'
-        // },
-        { type: 'upper', children: [{ text: 'upper is header!!' }] },
-        { type: 'paragraph', children: [{ text: 'SlateTransforms.insertNodes type:paragraph text ok!!' }] }
+        { type: 'upper', children: [{ text: 'solo upper is header!!' }] },
       ];
     var arg3 = { at: SlateEditor.end(editorRef.value, []) };
     SlateTransforms.insertNodes(arg1, arg2, arg3 );
