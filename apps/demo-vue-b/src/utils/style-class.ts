@@ -14,7 +14,6 @@ import { VNode, VNodeStyle } from 'snabbdom'
 import { genColors } from '../modules/color/menu/config'
 import { genFontSizeConfig, getFontFamilyConfig } from '../modules/font-size-family/menu/config'
 import { genLineHeightConfig } from '../modules/line-height/menu/config'
-import { Dom7Array } from './dom'
 import { addVnodeClassName, addVnodeDataset, addVnodeStyle } from './vdom'
 
 export type TextStyleType = StyleClassTokenType
@@ -223,7 +222,7 @@ export function getTextStyleMode(editor?: IDomEditor) {
 }
 
 export function appendStyleClassAndData(
-  $text: Dom7Array,
+  $text: any,
   type: TextStyleType,
   value: string,
   editor?: IDomEditor,
@@ -289,7 +288,7 @@ function createClassToValueMap(
 }
 
 export function getStyleValueFromDataOrClass(
-  $text: Dom7Array,
+  $text: any,
   type: TextStyleType,
   editor?: IDomEditor,
 ): string {

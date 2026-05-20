@@ -10,7 +10,6 @@ import $, {
   children,
   css,
   dataset,
-  Dom7Array,
   empty,
   filter,
   find,
@@ -43,7 +42,7 @@ import DOMRange = globalThis.Range
 import DOMSelection = globalThis.Selection
 import DOMStaticRange = globalThis.StaticRange
 
-export { Dom7Array } from 'dom7'
+
 
 if (css) { $.fn.css = css }
 if (append) { $.fn.append = append }
@@ -93,7 +92,7 @@ export function isPlainText(str: string) {
  * 获取 outerHTML
  * @param $elem dom7 elem
  */
-export function getOuterHTML($elem: Dom7Array) {
+export function getOuterHTML($elem: any) {
   if ($elem.length === 0) { return '' }
   return $elem[0].outerHTML
 }
@@ -102,7 +101,7 @@ export function getOuterHTML($elem: Dom7Array) {
  * 获取 tagName lower-case
  * @param $elem $elem
  */
-export function getTagName($elem: Dom7Array): string {
+export function getTagName($elem: any): string {
   if ($elem.length) { return $elem[0].tagName.toLowerCase() }
   return ''
 }
@@ -112,7 +111,7 @@ export function getTagName($elem: Dom7Array): string {
  * @param $elem $elem
  * @param styleKey style key
  */
-export function getStyleValue($elem: Dom7Array, styleKey: string): string {
+export function getStyleValue($elem: any, styleKey: string): string {
   let res = ''
 
   const styleStr = $elem.attr('style') || '' // 如 'line-height: 2.5; color: red;'
