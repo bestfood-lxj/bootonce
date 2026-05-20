@@ -35,6 +35,9 @@ export type RenderElemFnType = (
   editor: IDomEditor
 ) => VNode
 
+
+
+console.log("........................................................................................................ 注册 render element 配置")
 // 注册 render element 配置
 export const RENDER_ELEM_CONF: {
   [key: string]: RenderElemFnType // key 要和 node.type 对应 ！！！
