@@ -35,6 +35,7 @@
     "example": "turbo run example --filter=@wangeditor-next/demo-html",
     "demo:vue-a": "pnpm --filter @wangeditor-next/demo-vue-a run dev:all",
     "build:vue-a": "pnpm --filter @wangeditor-next/demo-vue-a run build",
+    "build:vue-b": "pnpm --filter @wangeditor-next/demo-vue-b run build",
     "demo:vue-b": "pnpm --filter @wangeditor-next/demo-vue-b run dev:all",
     "demo:vue-c": "pnpm --filter @wangeditor-next/demo-vue-c run dev:all",
     "demo:vue3": "pnpm --filter @wangeditor-next/demo-vue3 run dev:all",
