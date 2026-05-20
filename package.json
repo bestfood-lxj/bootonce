@@ -147,8 +147,7 @@
     "@wangeditor-next/editor-for-vue>@wangeditor-next/editor": "workspace:*"
   },
   "pnpm": {
-    "strictPeerDependencies": false,
-    "autoInstallPeers": true,
+    
     "overrides": {
       "@wangeditor-next/editor-for-vue>@wangeditor-next/editor": "workspace:*"
     }
