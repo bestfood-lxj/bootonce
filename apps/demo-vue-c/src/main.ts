@@ -15,10 +15,10 @@ function renderParagraph(
         attrs: {
           cx: 50,
           cy: 50,
-          r: 10,
-          stroke: "green",
-          "stroke-width": 4,
-          fill: "yellow"
+          r: 30,
+          stroke: "blue",
+          "stroke-width": 8,
+          fill: "red"
         }
       })
     ]),
@@ -60,7 +60,7 @@ Boot.registerModule({renderElems: [renderParagraphConf],})
 Boot.registerModule({
   renderElems: [
     {
-      type: 'aicon',
+      type: 'bluec',
       renderElem: renderIcon,
     },
   ],

@@ -53,11 +53,7 @@ onMounted(() => {
           children: [{ text: 'attachment text' }]
         },
         {
-          type: 'aicon',
-          icon: 'svg-icon:delete',
-          size: 16,
-          color: 'red',
-          text: 'if (Node$1.isText(_node)) {',
+          type: 'bluec',
           children: [{ text: 'aicon text' }], // inline void 节点必须有 children
         },
         
