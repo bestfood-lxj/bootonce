@@ -143,6 +143,9 @@
   "dependencies": {
     "@babel/runtime": "^7.14.6"
   },
+  "resolutions": {
+    "@wangeditor-next/editor-for-vue/@wangeditor-next/editor": "workspace:*"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

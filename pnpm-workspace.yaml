@@ -2,5 +2,7 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'shared/*'
-hoist:
-  - '@wangeditor-next/editor'
+
+pnpm:
+  overrides:
+    @wangeditor-next/editor: 'workspace:*'
