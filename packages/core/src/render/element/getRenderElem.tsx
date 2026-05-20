@@ -33,6 +33,9 @@ function defaultRender(
  */
 function getRenderElem(type: string): RenderElemFnType {
   const fn = RENDER_ELEM_CONF[type]
+  if(!fn){
+  	console.log("no type ocuur!::",type,RENDER_ELEM_CONF)
+  }
   return fn || defaultRender
 }
 
