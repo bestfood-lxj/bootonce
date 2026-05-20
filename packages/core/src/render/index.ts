@@ -55,4 +55,5 @@ export function registerRenderElemConf(conf: IRenderElemConf) {
 
   // 如果 key 重复了，就后者覆盖前者
   RENDER_ELEM_CONF[key] = renderElem
+  console.log("after run registerRenderElemConf::",Object.keys(RENDER_ELEM_CONF))
 }
