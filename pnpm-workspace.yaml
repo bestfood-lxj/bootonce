@@ -5,4 +5,4 @@ packages:
 
 pnpm:
   overrides:
-    @wangeditor-next/editor: 'workspace:*'
+    '@wangeditor-next/editor': 'workspace:*'
