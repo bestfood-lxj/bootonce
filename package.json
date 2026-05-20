@@ -51,6 +51,11 @@
     "shared/*",
     "packages/*"
   ],
+  "pnpm": {
+    "overrides": {
+      "@wangeditor-next/editor-for-vue>@wangeditor-next/editor":"workspace:*"
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.24.7",
     "@babel/helper-function-name": "^7.22.5",
