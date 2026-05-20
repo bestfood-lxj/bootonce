@@ -1,5 +1,52 @@
 # Change Log
 
+## 2.0.3
+
+### Patch Changes
+
+- d311c7a: Fix first-node table lifecycle by removing the prepended empty paragraph workaround and making `clear()` reliably reset content when table is the first top-level node.
+
+  Add regressions for issue #47 to ensure first inserted table can be removed via select-all delete/cut and that setHtml fully replaces previous table content.
+
+- 18d2ae5: Flush pending throttled column-resize movement on mouseup so fast drag operations reliably apply the final column width.
+- edc17af: Fix table column resize after `setHtml` when the current selection is outside the table.
+
+  Column drag now captures the target table path on `mousedown` and keeps using
+  that path during `mousemove`, instead of looking up the table from current
+  selection state. This keeps full-width table column resize usable after
+  `setHtml` without requiring an extra click inside a cell first.
+
+- 9aa2987: Fix table multi-cell cut behavior so cutting selected cells clears content without merging cells or corrupting table structure.
+- Updated dependencies [d311c7a]
+- Updated dependencies [539e9f0]
+- Updated dependencies [647b74c]
+- Updated dependencies [6641948]
+- Updated dependencies [b2c0fa7]
+- Updated dependencies [91dd27e]
+- Updated dependencies [e90bd5b]
+  - @wangeditor-next/core@1.8.3
+
+## 2.0.2
+
+### Patch Changes
+
+- ff0ba6a: Fix table row-resize hotspot alignment after table cell content expands.
+
+  The row resize UI now follows real DOM row heights (captured via table resize
+  observation) instead of stale model defaults, so hovering and dragging the row
+  bottom border stays accurate even when a cell grows taller from wrapped text.
+
+- Updated dependencies [38532c2]
+  - @wangeditor-next/core@1.8.2
+
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [148253e]
+- Updated dependencies [0c091d0]
+  - @wangeditor-next/core@1.8.1
+
 ## 2.0.0
 
 ### Patch Changes

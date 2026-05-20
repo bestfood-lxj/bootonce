@@ -1,5 +1,117 @@
 # Change Log
 
+## 5.7.3
+
+### Patch Changes
+
+- d311c7a: Fix first-node table lifecycle by removing the prepended empty paragraph workaround and making `clear()` reliably reset content when table is the first top-level node.
+
+  Add regressions for issue #47 to ensure first inserted table can be removed via select-all delete/cut and that setHtml fully replaces previous table content.
+
+- 6641948: Fix clipped first-line rendering when large-font superscript or subscript appears
+  at the top of the editor content.
+
+  `sup` and `sub` in the editor area now inherit line-height, preventing browser
+  default `line-height: 0` behavior from being cut by the scroll container.
+
+- edc17af: Fix table column resize after `setHtml` when the current selection is outside the table.
+
+  Column drag now captures the target table path on `mousedown` and keeps using
+  that path during `mousemove`, instead of looking up the table from current
+  selection state. This keeps full-width table column resize usable after
+  `setHtml` without requiring an extra click inside a cell first.
+
+- b2c0fa7: Fix toolbar object config compatibility for single menus such as `fontSize`.
+
+  `toolbarKeys` items like `{ key: 'fontSize', title: '文字大小' }` are now treated
+  as single-menu configs (instead of menu groups) when `menuKeys` is absent, so
+  `MENU_CONF.fontSize.fontSizeList` and the select dropdown keep working together.
+
+- e90bd5b: Fix nested span style parsing so explicit child style values correctly override inherited parent marks during HTML import.
+
+  This resolves issue #608 where a mixed bold span (`font-weight:700` parent with `font-weight:400` child) was imported as fully bold text instead of preserving the non-bold subrange.
+
+- Updated dependencies [d311c7a]
+- Updated dependencies [539e9f0]
+- Updated dependencies [917fe92]
+- Updated dependencies [c6c6c0b]
+- Updated dependencies [647b74c]
+- Updated dependencies [6641948]
+- Updated dependencies [18d2ae5]
+- Updated dependencies [edc17af]
+- Updated dependencies [b2c0fa7]
+- Updated dependencies [91dd27e]
+- Updated dependencies [e90bd5b]
+- Updated dependencies [9aa2987]
+  - @wangeditor-next/core@1.8.3
+  - @wangeditor-next/table-module@2.0.3
+  - @wangeditor-next/basic-modules@2.0.3
+  - @wangeditor-next/video-module@2.0.3
+  - @wangeditor-next/code-highlight@2.0.3
+  - @wangeditor-next/list-module@2.0.3
+  - @wangeditor-next/upload-image-module@2.0.3
+
+## 5.7.2
+
+### Patch Changes
+
+- 38532c2: Fix IME composition stability for long-text Chinese input (issue #793) by
+  capturing native DOM selection containers directly during composition
+  boundaries instead of converting Slate ranges in transient sync windows.
+
+  Align the composition flow with Slate-style handling to avoid
+  `Cannot resolve a DOM point from Slate point` errors, and add regression
+  coverage for repeated composition commits on long text.
+
+- ff0ba6a: Fix table row-resize hotspot alignment after table cell content expands.
+
+  The row resize UI now follows real DOM row heights (captured via table resize
+  observation) instead of stale model defaults, so hovering and dragging the row
+  bottom border stays accurate even when a cell grows taller from wrapped text.
+
+- Updated dependencies [38532c2]
+- Updated dependencies [ff0ba6a]
+  - @wangeditor-next/core@1.8.2
+  - @wangeditor-next/table-module@2.0.2
+  - @wangeditor-next/basic-modules@2.0.2
+  - @wangeditor-next/code-highlight@2.0.2
+  - @wangeditor-next/list-module@2.0.2
+  - @wangeditor-next/upload-image-module@2.0.2
+  - @wangeditor-next/video-module@2.0.2
+
+## 5.7.1
+
+### Patch Changes
+
+- 148253e: Add a lightweight subpath `@wangeditor-next/editor/core` for on-demand module composition,
+  and a separate `@wangeditor-next/editor/upload` entry for uploader APIs. The core subpath avoids
+  auto-registering built-in modules and does not include upload runtime code.
+
+  Align Babel transpilation targets with the repository browserslist (drop hardcoded `ie 11`
+  target) to reduce bundle size.
+
+  Add a tiptap-like composition API for the `@wangeditor-next/editor/core` subpath via extensions
+  and factory-based creation helpers.
+
+  Keep backward compatibility for legacy `createUploader` / `createUppyUploader` imports from
+  `@wangeditor-next/core`, and mark them as deprecated in favor of `@wangeditor-next/core/upload`.
+
+- 0c091d0: Fix IME composition after select-all so `compositionstart/compositionend` no longer throw
+  `Cannot resolve a DOM node from Slate node` in transient Slate-DOM sync windows.
+
+  Align selection syncing with Slate behavior by tolerating temporary DOM mapping lag, and
+  add an E2E regression case for issue #813 (`select all -> composition input`).
+
+- Updated dependencies [148253e]
+- Updated dependencies [0c091d0]
+  - @wangeditor-next/core@1.8.1
+  - @wangeditor-next/basic-modules@2.0.1
+  - @wangeditor-next/code-highlight@2.0.1
+  - @wangeditor-next/list-module@2.0.1
+  - @wangeditor-next/table-module@2.0.1
+  - @wangeditor-next/upload-image-module@2.0.1
+  - @wangeditor-next/video-module@2.0.1
+
 ## 5.7.0
 
 ### Minor Changes

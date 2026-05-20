@@ -1,5 +1,70 @@
 # Change Log
 
+## 1.8.3
+
+### Patch Changes
+
+- d311c7a: Fix first-node table lifecycle by removing the prepended empty paragraph workaround and making `clear()` reliably reset content when table is the first top-level node.
+
+  Add regressions for issue #47 to ensure first inserted table can be removed via select-all delete/cut and that setHtml fully replaces previous table content.
+
+- 539e9f0: Preserve SVG namespace (`data.ns`) during vnode data normalization so custom renderers using `h('svg')` keep valid SVG rendering semantics.
+- 647b74c: Fix list selection mapping when the browser selection lands on ordered-list reserve markers (`data-w-e-reserve`).
+
+  Treat reserve-marker targets as selectable during `selectionchange` sync, and resolve reserve-marker DOM points to nearby Slate text points so `editor.getSelectionText()` stays in sync with visible list-row selections.
+
+- 6641948: Fix clipped first-line rendering when large-font superscript or subscript appears
+  at the top of the editor content.
+
+  `sup` and `sub` in the editor area now inherit line-height, preventing browser
+  default `line-height: 0` behavior from being cut by the scroll container.
+
+- b2c0fa7: Fix toolbar object config compatibility for single menus such as `fontSize`.
+
+  `toolbarKeys` items like `{ key: 'fontSize', title: '文字大小' }` are now treated
+  as single-menu configs (instead of menu groups) when `menuKeys` is absent, so
+  `MENU_CONF.fontSize.fontSizeList` and the select dropdown keep working together.
+
+- 91dd27e: Fix caret auto-scroll alignment during rapid enter typing so Vue 3 wrapper editing keeps the caret visible at the viewport bottom.
+- e90bd5b: Fix nested span style parsing so explicit child style values correctly override inherited parent marks during HTML import.
+
+  This resolves issue #608 where a mixed bold span (`font-weight:700` parent with `font-weight:400` child) was imported as fully bold text instead of preserving the non-bold subrange.
+
+## 1.8.2
+
+### Patch Changes
+
+- 38532c2: Fix IME composition stability for long-text Chinese input (issue #793) by
+  capturing native DOM selection containers directly during composition
+  boundaries instead of converting Slate ranges in transient sync windows.
+
+  Align the composition flow with Slate-style handling to avoid
+  `Cannot resolve a DOM point from Slate point` errors, and add regression
+  coverage for repeated composition commits on long text.
+
+## 1.8.1
+
+### Patch Changes
+
+- 148253e: Add a lightweight subpath `@wangeditor-next/editor/core` for on-demand module composition,
+  and a separate `@wangeditor-next/editor/upload` entry for uploader APIs. The core subpath avoids
+  auto-registering built-in modules and does not include upload runtime code.
+
+  Align Babel transpilation targets with the repository browserslist (drop hardcoded `ie 11`
+  target) to reduce bundle size.
+
+  Add a tiptap-like composition API for the `@wangeditor-next/editor/core` subpath via extensions
+  and factory-based creation helpers.
+
+  Keep backward compatibility for legacy `createUploader` / `createUppyUploader` imports from
+  `@wangeditor-next/core`, and mark them as deprecated in favor of `@wangeditor-next/core/upload`.
+
+- 0c091d0: Fix IME composition after select-all so `compositionstart/compositionend` no longer throw
+  `Cannot resolve a DOM node from Slate node` in transient Slate-DOM sync windows.
+
+  Align selection syncing with Slate behavior by tolerating temporary DOM mapping lag, and
+  add an E2E regression case for issue #813 (`select all -> composition input`).
+
 ## 1.8.0
 
 ### Minor Changes

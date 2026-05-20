@@ -18,6 +18,9 @@ Object.defineProperty(window, 'getComputedStyle', {
 
 Object.defineProperty(HTMLElement.prototype, 'closest', {
   value(selector: string) {
+    if (selector === '[data-block-type="table-cell"]') {
+      return this.getAttribute('data-block-type') === 'table-cell' ? this : null
+    }
     if (selector === '.table') {
       return {
         getBoundingClientRect: () => ({
@@ -208,10 +211,8 @@ describe('column resize module', () => {
     tableDom.appendChild(innerTable)
 
     vi.spyOn(editor, 'getMenuConfig').mockReturnValue({ minWidth: 90 } as any)
-    vi.spyOn(slate.Editor, 'nodes').mockReturnValue((function* () {
-      yield [table, [0]] as slate.NodeEntry<slate.Node>
-    }()))
-    vi.spyOn(core.DomEditor, 'getSelectedNodeByType').mockReturnValue(table as any)
+    vi.spyOn(core.DomEditor, 'findPath').mockReturnValue([0] as slate.Path)
+    vi.spyOn(slate.Editor, 'node').mockReturnValue([table as slate.Node, [0]])
     vi.spyOn(core.DomEditor, 'toDOMNode').mockReturnValue(tableDom)
     const setNodesSpy = vi.spyOn(slate.Transforms, 'setNodes').mockImplementation(() => {})
 
@@ -231,12 +232,60 @@ describe('column resize module', () => {
     expect(setNodesSpy).toHaveBeenCalledWith(
       editor,
       { columnWidths: [80, 180, 100] } as TableElement,
-      { mode: 'highest' },
+      { at: [0] },
     )
 
     window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
 
     expect(document.body.style.cursor).toBe('')
+  })
+
+  test('fast drag flushes trailing resize update on mouseup', () => {
+    const table = {
+      ...createTable([80, 120, 100]),
+      resizingIndex: 1,
+    }
+    const tableDom = document.createElement('div')
+    const innerTable = document.createElement('div')
+
+    innerTable.className = 'table'
+    vi.spyOn(innerTable, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      width: 300,
+      height: 120,
+      bottom: 120,
+      right: 300,
+      toJSON: () => ({}),
+    } as DOMRect)
+    tableDom.appendChild(innerTable)
+
+    vi.spyOn(editor, 'getMenuConfig').mockReturnValue({ minWidth: 90 } as any)
+    vi.spyOn(core.DomEditor, 'findPath').mockReturnValue([0] as slate.Path)
+    vi.spyOn(slate.Editor, 'node').mockReturnValue([table as slate.Node, [0]])
+    vi.spyOn(core.DomEditor, 'toDOMNode').mockReturnValue(tableDom)
+    const setNodesSpy = vi.spyOn(slate.Transforms, 'setNodes').mockImplementation(() => {})
+
+    handleCellBorderMouseDown(editor, table)
+
+    const resizeHandle = document.createElement('div')
+
+    resizeHandle.className = 'column-resizer-item'
+    document.body.appendChild(resizeHandle)
+    resizeHandle.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 200 }))
+    // First move initializes throttle window.
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 200 }))
+    // Second move is queued as trailing call and must be flushed on mouseup.
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 260 }))
+    window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+
+    expect(setNodesSpy).toHaveBeenCalledWith(
+      editor,
+      { columnWidths: [80, 180, 100] } as TableElement,
+      { at: [0] },
+    )
   })
 
   test('dragging falls back to simple width changes when table DOM is missing', async () => {
@@ -246,10 +295,8 @@ describe('column resize module', () => {
     }
 
     vi.spyOn(editor, 'getMenuConfig').mockReturnValue({ minWidth: 95 } as any)
-    vi.spyOn(slate.Editor, 'nodes').mockReturnValue((function* () {
-      yield [table, [0]] as slate.NodeEntry<slate.Node>
-    }()))
-    vi.spyOn(core.DomEditor, 'getSelectedNodeByType').mockReturnValue(table as any)
+    vi.spyOn(core.DomEditor, 'findPath').mockReturnValue([0] as slate.Path)
+    vi.spyOn(slate.Editor, 'node').mockReturnValue([table as slate.Node, [0]])
     vi.spyOn(core.DomEditor, 'toDOMNode').mockReturnValue(document.createElement('div'))
     const setNodesSpy = vi.spyOn(slate.Transforms, 'setNodes').mockImplementation(() => {})
 
@@ -268,7 +315,7 @@ describe('column resize module', () => {
     expect(setNodesSpy).toHaveBeenCalledWith(
       editor,
       { columnWidths: [95, 120, 100] } as TableElement,
-      { mode: 'highest' },
+      { at: [0] },
     )
   })
 })

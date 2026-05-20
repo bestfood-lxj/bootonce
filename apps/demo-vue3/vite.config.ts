@@ -3,10 +3,5 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [vue()],
-  server: { 
-  	open: false,
-  	hmr: {
-	    clientPort: 443
-	  }
-  },
+  server: { open: false },
 })

@@ -159,6 +159,23 @@ describe('parse style html', () => {
     ])
   })
 
+  it('it should keep explicit non-bold style scoped when parent span is bold', () => {
+    const nestedEditor = createEditor({
+      html: '<p><span style="font-weight: 700;">A<span style="font-weight: 400;">B</span>C</span></p>',
+    })
+
+    expect(nestedEditor.children).toEqual([
+      {
+        type: 'paragraph',
+        children: [
+          { text: 'A', bold: true },
+          { text: 'B' },
+          { text: 'C', bold: true },
+        ],
+      },
+    ])
+  })
+
   it('it should ignore formatting newlines around nested superscript html imports', () => {
     const nestedEditor = createEditor({
       html: '<p><span>\nH<span style="vertical-align: super;">2</span>O\n</span></p>',
@@ -188,5 +205,21 @@ describe('parse style html', () => {
       },
     ])
     expect(nestedEditor.getText()).toBe(underlinedSpaces)
+  })
+
+  it('it should preserve emsp inside styled span when setting html', () => {
+    const html = '<p>2.<span style="font-family: MS-Mincho;">111&emsp;222</span></p>'
+    const nestedEditor = createEditor({ html })
+
+    expect(nestedEditor.children).toEqual([
+      {
+        type: 'paragraph',
+        children: [
+          { text: '2.' },
+          { text: '111 222', fontFamily: 'MS-Mincho' },
+        ],
+      },
+    ])
+    expect(nestedEditor.getHtml()).toBe('<p>2.<span style="font-family: MS-Mincho;">111 222</span></p>')
   })
 })

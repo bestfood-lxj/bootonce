@@ -213,6 +213,39 @@ export const DomEditor = {
   },
 
   /**
+   * Check if a Slate node currently has a mapped DOM node.
+   * During IME/composition transitions the Slate tree can update before DOM patching finishes.
+   */
+  hasDOMNodeBySlateNode(editor: IDomEditor, node: Node): boolean {
+    if (Editor.isEditor(node)) {
+      return !!EDITOR_TO_ELEMENT.get(editor)
+    }
+
+    const key = DomEditor.findKey(editor, node)
+
+    return !!KEY_TO_ELEMENT.get(key)
+  },
+
+  /**
+   * Check if both range endpoints can be resolved to DOM nodes right now.
+   */
+  canResolveDOMRange(editor: IDomEditor, range: Range): boolean {
+    try {
+      const [anchorNode] = Editor.node(editor, range.anchor.path)
+      const [focusNode] = Range.isCollapsed(range)
+        ? [anchorNode]
+        : Editor.node(editor, range.focus.path)
+
+      return (
+        DomEditor.hasDOMNodeBySlateNode(editor, anchorNode)
+        && DomEditor.hasDOMNodeBySlateNode(editor, focusNode)
+      )
+    } catch (error) {
+      return false
+    }
+  },
+
+  /**
    * Check if a DOM node is within the editor.
    */
   hasDOMNode(editor: IDomEditor, target: DOMNode, options: { editable?: boolean } = {}): boolean {
@@ -596,6 +629,16 @@ export const DomEditor = {
           })
         }
       } else if (nonEditableNode) {
+        const isReserveNode = Boolean(nonEditableNode.closest('[data-w-e-reserve]'))
+
+        // `data-w-e-reserve` (for example list-item prefix markers) is a
+        // non-editable decoration before real slate text. Prefer mapping
+        // forward so drag/select from the marker lands on the following text.
+        if (!searchDirection && isReserveNode) {
+          searchDirection = 'forward'
+        }
+
+        let resolvedDirection = searchDirection
         const getLeafNodes = (node: DOMElement | null | undefined) => {
           return node
             ? Array.from(node.querySelectorAll('[data-slate-leaf]'))
@@ -621,7 +664,17 @@ export const DomEditor = {
           }
         }
 
-        if (!leafNode && (searchDirection === 'forward' || !searchDirection)) {
+        if (
+          !leafNode
+          && (
+            searchDirection === 'forward'
+            || !searchDirection
+            // Keep trying for reserve markers even when the requested
+            // direction is backward. Reserve markers are rendered before real
+            // text and otherwise cannot resolve a point.
+            || isReserveNode
+          )
+        ) {
           const leafNodes = [
             ...getLeafNodes(elementNode),
             ...getLeafNodes(elementNode?.nextElementSibling as DOMElement | null),
@@ -630,7 +683,9 @@ export const DomEditor = {
           for (const currentLeaf of leafNodes) {
             if (isAfter(nonEditableNode, currentLeaf)) {
               leafNode = currentLeaf
-              searchDirection = 'forward'
+              resolvedDirection = searchDirection === 'backward' && isReserveNode
+                ? 'backward'
+                : 'forward'
               break
             }
           }
@@ -640,7 +695,7 @@ export const DomEditor = {
           textNode = leafNode.closest('[data-slate-node="text"]')!
           domNode = leafNode
 
-          if (searchDirection === 'forward') {
+          if (resolvedDirection === 'forward') {
             offset = 0
           } else {
             offset = domNode.textContent!.length
@@ -853,6 +908,10 @@ export const DomEditor = {
     for (const nodeEntry of nodeEntries) {
       if (nodeEntry != null) {
         const n = nodeEntry[0]
+
+        if (!DomEditor.hasDOMNodeBySlateNode(editor, n)) {
+          continue
+        }
         const elem = DomEditor.toDOMNode(editor, n)
 
         // 只遍历 elem 范围，考虑性能

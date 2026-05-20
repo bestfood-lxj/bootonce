@@ -8,7 +8,7 @@ import { Range, Transforms } from 'slate'
 
 import { DomEditor } from '../editor/dom-editor'
 import { IDomEditor } from '../editor/interface'
-import { DOMElement } from '../utils/dom'
+import { DOMElement, DOMRange } from '../utils/dom'
 import { IS_FIREFOX } from '../utils/ua'
 import {
   EDITOR_TO_ELEMENT,
@@ -106,7 +106,7 @@ export function editorSelectionToDOM(textarea: TextArea, editor: IDomEditor, foc
   if (selection && !DomEditor.hasRange(editor, selection)) {
     editor.selection = DomEditor.toSlateRange(editor, domSelection, {
       exactMatch: false,
-      suppressThrow: false,
+      suppressThrow: true,
     })
     return
   }
@@ -114,7 +114,16 @@ export function editorSelectionToDOM(textarea: TextArea, editor: IDomEditor, foc
   // Otherwise the DOM selection is out of sync, so update it.
   textarea.isUpdatingSelection = true
 
-  const newDomRange = selection && DomEditor.toDOMRange(editor, selection)
+  let newDomRange: DOMRange | null = null
+
+  try {
+    newDomRange = selection && DomEditor.toDOMRange(editor, selection)
+  } catch (error) {
+    // Align with Slate Editable behavior: during composition the Slate tree can
+    // briefly lead DOM mapping updates, so selection sync should tolerate that
+    // transient mismatch and retry on subsequent updates.
+    newDomRange = null
+  }
 
   if (newDomRange) {
     if (Range.isBackward(selection!)) {
@@ -156,8 +165,35 @@ export function editorSelectionToDOM(textarea: TextArea, editor: IDomEditor, foc
         scrollMode: 'if-needed',
         boundary: config.scroll ? editorElement.parentElement || body : body, // issue 4215
         block: 'end',
-        behavior: 'smooth',
+        // Keep caret tracking deterministic during fast typing/enter bursts.
+        // Smooth scrolling can lag behind and leave the caret above viewport bottom.
+        behavior: 'auto',
       })
+
+      // Some wrapper runtimes can still leave the collapsed caret slightly
+      // outside of the scroll viewport after rapid enter bursts. Force a
+      // final correction so caret is always visible (issue #388).
+      if (config.scroll) {
+        const scrollContainer = editorElement.parentElement as HTMLElement | null
+
+        if (scrollContainer) {
+          const keepCaretVisible = () => {
+            const latestRect = newDomRange!.getBoundingClientRect()
+            const containerRect = scrollContainer.getBoundingClientRect()
+            const overflowBottom = latestRect.bottom - containerRect.bottom
+            const overflowTop = containerRect.top - latestRect.top
+
+            if (overflowBottom > 0) {
+              scrollContainer.scrollTop += overflowBottom + 1
+            } else if (overflowTop > 0) {
+              scrollContainer.scrollTop -= overflowTop + 1
+            }
+          }
+
+          keepCaretVisible()
+          requestAnimationFrame(keepCaretVisible)
+        }
+      }
       // @ts-ignore
       delete leafEl.getBoundingClientRect
     }

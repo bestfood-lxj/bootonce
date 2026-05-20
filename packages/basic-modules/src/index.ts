@@ -23,8 +23,6 @@ import wangEditorJustifyModule from './modules/justify'
 import wangEditorLineHeightModule from './modules/line-height'
 import wangEditorLinkModule from './modules/link'
 import wangEditorParagraphModule from './modules/paragraph'
-//import wangEditorUpperModule from './modules/section'
-import wangEditorFooterModule from './modules/footer'
 import wangEditorTextStyleModule from './modules/text-style'
 import wangEditorTodoModule from './modules/todo'
 import wangEditorUndoRedoModule from './modules/undo-redo'
@@ -53,7 +51,6 @@ export default [
   wangEditorBlockQuoteModule,
   wangEditorHeaderModule,
   wangEditorParagraphModule,
-  wangEditorFooterModule,
   wangEditorTodoModule,
 
   // command

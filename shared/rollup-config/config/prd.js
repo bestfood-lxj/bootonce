@@ -43,7 +43,7 @@ function genPrdConf(format) {
       extract: 'css/style.css',
     }),
     cleanup({
-      comments: 'all',
+      comments: 'none',
       extensions: ['.ts', '.tsx'],
     }),
     terser(), // 压缩 js

@@ -94,6 +94,417 @@ test.describe('Basic Editor', () => {
     await expect(page.getByTestId('editor-html')).toContainText('e2e-text')
   })
 
+  test('regression #813: select-all then composition should not throw and should hide placeholder', async ({ page }) => {
+    const pageErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.message || String(err))
+    })
+
+    await typeInEditor(page, 'abc')
+    await selectAll(page)
+
+    await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="editor-textarea"] [contenteditable="true"]')
+
+      if (!el) {
+        throw new Error('editable not found')
+      }
+
+      const fire = (event: Event) => el.dispatchEvent(event)
+
+      fire(new CompositionEvent('compositionstart', { data: '' }))
+      fire(new InputEvent('beforeinput', {
+        inputType: 'insertCompositionText',
+        data: 'ni',
+        bubbles: true,
+        cancelable: true,
+      }))
+      fire(new InputEvent('input', {
+        inputType: 'insertCompositionText',
+        data: 'ni',
+        bubbles: true,
+      }))
+      fire(new CompositionEvent('compositionupdate', { data: 'ni' }))
+      fire(new CompositionEvent('compositionend', { data: '你' }))
+    })
+
+    await page.waitForTimeout(500)
+
+    const placeholder = page.locator('.w-e-text-placeholder')
+
+    await expect(placeholder).toBeHidden()
+    await expect(page.getByTestId('editor-html')).toContainText('<p>你</p>')
+    expect(pageErrors).toEqual([])
+  })
+
+  test('regression #793: repeated composition on long text should not throw DOM point error', async ({ page }) => {
+    const pageErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.stack || err?.message || String(err))
+    })
+
+    await typeInEditor(page, 'abcdefghijklmnopqrstuvwxyz1234')
+
+    await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="editor-textarea"] [contenteditable="true"]')
+
+      if (!el) {
+        throw new Error('editable not found')
+      }
+
+      const fire = (event: Event) => el.dispatchEvent(event)
+      const seq: Array<{ pinyin: string, text: string }> = [
+        { pinyin: 'ni', text: '你' },
+        { pinyin: 'hao', text: '好' },
+        { pinyin: 'zhong', text: '中' },
+        { pinyin: 'wen', text: '文' },
+        { pinyin: 'shu', text: '输' },
+        { pinyin: 'ru', text: '入' },
+      ]
+
+      for (const item of seq) {
+        fire(new CompositionEvent('compositionstart', { data: '' }))
+        fire(new InputEvent('beforeinput', {
+          inputType: 'insertCompositionText',
+          data: item.pinyin,
+          bubbles: true,
+          cancelable: true,
+        }))
+        fire(new InputEvent('input', {
+          inputType: 'insertCompositionText',
+          data: item.pinyin,
+          bubbles: true,
+        }))
+        fire(new CompositionEvent('compositionupdate', { data: item.pinyin }))
+        fire(new CompositionEvent('compositionend', { data: item.text }))
+      }
+    })
+
+    await page.waitForTimeout(800)
+
+    await expect(page.getByTestId('editor-html')).toContainText('abcdefghijklmnopqrstuvwxyz1234')
+    await expect(page.getByTestId('editor-html')).toContainText('你好中文输入')
+
+    const domPointErrors = pageErrors.filter(msg => msg.includes('Cannot resolve a DOM point from Slate point'))
+
+    expect(domPointErrors).toEqual([])
+  })
+
+  test('regression #282: first-line superscript with large font should not be clipped', async ({ page }) => {
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor missing')
+      }
+
+      editor.setHtml('<p><span style="font-size: 40px;"><sup><strong>sfdsf</strong></sup></span></p>')
+    })
+
+    await page.waitForTimeout(120)
+
+    const snapshot = await page.evaluate(() => {
+      const textarea = document.querySelector('[data-testid="editor-textarea"]')
+      const scroll = textarea?.querySelector('.w-e-scroll')
+      const strong = textarea?.querySelector('strong')
+      const sup = textarea?.querySelector('sup')
+
+      if (!scroll || !strong || !sup) {
+        throw new Error('required elements not found')
+      }
+
+      const scrollRect = scroll.getBoundingClientRect()
+      const strongRect = strong.getBoundingClientRect()
+      const clippedTop = strongRect.top + 0.5 < scrollRect.top
+
+      return {
+        clippedTop,
+        scrollTop: scrollRect.top,
+        textTop: strongRect.top,
+        supLineHeight: window.getComputedStyle(sup).lineHeight,
+      }
+    })
+
+    expect(snapshot.clippedTop).toBe(false)
+    expect(snapshot.supLineHeight).not.toBe('0px')
+  })
+
+  test('regression #539: colored multiline blockquote should re-render and stay editable', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleErrors: string[] = []
+    const issueHtml = '<blockquote><span style="color: rgb(247, 89, 171);">22222<br>3333</span></blockquote>'
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.stack || err?.message || String(err))
+    })
+
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text())
+      }
+    })
+
+    const snapshot = await page.evaluate(value => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor missing')
+      }
+
+      editor.setHtml(value)
+      const firstPassHtml = editor.getHtml()
+
+      // Simulate framework two-way binding "echo" by writing serialized html back.
+      editor.setHtml(firstPassHtml)
+      editor.focus()
+      editor.insertText('Z')
+      editor.deleteBackward('character')
+
+      return {
+        firstPassHtml,
+        secondPassHtml: editor.getHtml(),
+        plainText: editor.getText?.() || '',
+      }
+    }, issueHtml)
+
+    const domNodeErrors = pageErrors.filter(msg => msg.includes('Cannot resolve a DOM node from Slate node'))
+
+    expect(snapshot.firstPassHtml).toContain('<blockquote>')
+    expect(snapshot.secondPassHtml).toContain('<blockquote>')
+    expect(snapshot.secondPassHtml).toContain('22222')
+    expect(snapshot.secondPassHtml).toContain('3333')
+    expect(snapshot.plainText).toContain('22222')
+    expect(snapshot.plainText).toContain('3333')
+    expect(domNodeErrors).toEqual([])
+    expect(consoleErrors).toEqual([])
+  })
+
+  test('regression #609: insertData with complex html should not break editing', async ({ page }) => {
+    const pageErrors: string[] = []
+    const consoleErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.message || String(err))
+    })
+
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text())
+      }
+    })
+
+    const complexHtml = [
+      '<p>111111111111111111111111111111</p>',
+      '<table style="width:100%;table-layout:fixed"><tbody>',
+      '  <tr>',
+      '    <td style="text-align:center;vertical-align:top">Layout 布局</td>',
+      '    <td style="text-align:left">Dialog 对话框</td>',
+      '    <td style="display:none;text-align:center"></td>',
+      '  </tr>',
+      '  <tr>',
+      '    <td style="text-align:center">Container 容器</td>',
+      '    <td style="text-align:left"><span>在保留自然浏览状态的情况下，默认可中断前端弹窗操作。</span></td>',
+      '    <td style="display:none;text-align:right"></td>',
+      '  </tr>',
+      '</tbody></table>',
+      '<p>22222222222222222222222222222</p>',
+      '<p><img alt="tiny" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" /></p>',
+      '<p>3333333333333333333333333333333333333</p>',
+    ].join('')
+
+    await page.evaluate(value => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor missing')
+      }
+
+      const transfer = new DataTransfer()
+
+      transfer.setData('text/plain', 'fallback')
+      transfer.setData('text/html', value)
+      editor.insertData(transfer)
+    }, complexHtml)
+
+    const editable = page.locator('[data-testid="editor-textarea"] [data-slate-editor]').first()
+
+    await editable.click()
+    await page.keyboard.type('after-insertData-check')
+
+    await expect(page.getByTestId('editor-html')).toContainText('after-insertData-check')
+
+    expect(pageErrors).toEqual([])
+    expect(consoleErrors).toEqual([])
+  })
+
+  test('regression #692: toolbar object config should keep fontSize select options', async ({ page }) => {
+    const pageErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.stack || err?.message || String(err))
+    })
+
+    await page.evaluate(() => {
+      const globalWindow = window as any
+      const bridge = globalWindow.wangEditorExampleBridge
+      const editorContainer = document.querySelector('#editor-text-area')
+      const toolbarContainer = document.querySelector('#editor-toolbar')
+
+      bridge?.toolbar?.destroy()
+      bridge?.editor?.destroy()
+
+      if (!editorContainer || !toolbarContainer) {
+        throw new Error('editor containers are missing')
+      }
+
+      const editor = globalWindow.wangEditor.createEditor({
+        selector: '#editor-text-area',
+        html: '<p>font-size-regression</p>',
+        config: {
+          MENU_CONF: {
+            fontSize: {
+              fontSizeList: ['12px', '16px', '24px', '40px'],
+            },
+          },
+        },
+      })
+      const toolbar = globalWindow.wangEditor.createToolbar({
+        editor,
+        selector: '#editor-toolbar',
+        config: {
+          toolbarKeys: [{ key: 'fontSize', title: '文字大小' }],
+        },
+      })
+
+      globalWindow.wangEditorExampleBridge = {
+        editor,
+        toolbar,
+      }
+    })
+
+    await focusEditor(page)
+
+    const fontSizeMenu = getToolbarMenu(page, 'fontSize')
+
+    await expect(fontSizeMenu).toHaveClass(/select-button/)
+    await expect(page.locator('#editor-toolbar .w-e-bar-item-group')).toHaveCount(0)
+
+    await fontSizeMenu.click()
+
+    const selectList = page.locator('.w-e-select-list:visible').last()
+
+    await expect(selectList).toBeVisible()
+
+    const optionTexts = (await selectList.locator('li').allTextContents()).map(item => item.trim())
+
+    expect(optionTexts).toEqual(expect.arrayContaining(['12px', '16px', '24px', '40px']))
+    expect(pageErrors).toEqual([])
+  })
+
+  test('regression #502: insertLink modal should stay in visible editor area after scroll-to-top', async ({ page }) => {
+    const pageErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.message || String(err))
+    })
+
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor missing')
+      }
+
+      const html = Array.from(
+        { length: 320 },
+        (_, i) => `<p>line-${String(i).padStart(3, '0')} abcdefghijklmnopqrstuvwxyz</p>`,
+      ).join('')
+
+      editor.setHtml(html)
+    })
+
+    const editable = page.locator('[data-testid="editor-textarea"] [contenteditable="true"]')
+
+    await editable.click()
+    await page.keyboard.press('Control+End')
+    await page.waitForTimeout(350)
+
+    await page.evaluate(() => {
+      const scroller = document.querySelector('[data-testid="editor-textarea"] .w-e-scroll') as HTMLElement | null
+
+      if (!scroller) {
+        throw new Error('scroller missing')
+      }
+      scroller.scrollTop = 0
+      window.scrollTo(0, 0)
+    })
+    await page.waitForTimeout(120)
+
+    const insertLinkMenu = await waitForMenuEnabled(page, 'insertLink')
+
+    await insertLinkMenu.click()
+    await expect(page.locator('.w-e-modal')).toBeVisible()
+
+    const metrics = await page.evaluate(() => {
+      const modal = document.querySelector('.w-e-modal')
+      const container = document.querySelector('[data-testid="editor-textarea"]')
+      const scroller = document.querySelector('[data-testid="editor-textarea"] .w-e-scroll') as HTMLElement | null
+      const modalRect = modal?.getBoundingClientRect()
+      const containerRect = container?.getBoundingClientRect()
+
+      return {
+        pageScrollY: window.scrollY,
+        scrollTop: scroller?.scrollTop ?? 0,
+        inContainerViewport: !!(modalRect && containerRect
+          && modalRect.top >= containerRect.top
+          && modalRect.bottom <= containerRect.bottom
+          && modalRect.left >= containerRect.left
+          && modalRect.right <= containerRect.right),
+      }
+    })
+
+    expect(metrics.pageScrollY).toBeLessThanOrEqual(1)
+    expect(metrics.scrollTop).toBe(0)
+    expect(metrics.inContainerViewport).toBe(true)
+    expect(pageErrors).toEqual([])
+  })
+
+  test('regression #541: dangerouslyInsertHtml should not append extra blank paragraphs', async ({ page }) => {
+    const metrics = await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor missing')
+      }
+
+      editor.clear()
+      const html = '<p><a>222</a></p><p>更新</p><p><a>222</a></p><p>更新</p><p><a>222</a></p><p>更新</p>'
+
+      editor.dangerouslyInsertHtml(html)
+
+      const output = editor.getHtml()
+      const wrapper = document.createElement('div')
+
+      wrapper.innerHTML = output
+      const paragraphs = Array.from(wrapper.querySelectorAll('p'))
+      const blankParagraphCount = paragraphs.filter(p => (p.textContent || '').trim() === '').length
+
+      return {
+        output,
+        paragraphCount: paragraphs.length,
+        blankParagraphCount,
+      }
+    })
+
+    expect(metrics.paragraphCount).toBe(6)
+    expect(metrics.blankParagraphCount).toBe(0)
+    expect(metrics.output).toBe(
+      '<p><a href="" target="">222</a></p><p>更新</p><p><a href="" target="">222</a></p><p>更新</p><p><a href="" target="">222</a></p><p>更新</p>',
+    )
+  })
+
   test('does not execute script when importing untrusted html', async ({ page }) => {
     const dialogs: string[] = []
 
@@ -189,6 +600,280 @@ test.describe('Basic Editor', () => {
     ).toHaveCount(1)
   })
 
+  test('regression #811: row resize hotzone should follow rendered row border after content expands', async ({ page }) => {
+    await clearEditor(page)
+    await page.keyboard.type('table-resize-probe')
+
+    await waitForMenuEnabled(page, 'insertTable')
+    await getToolbarMenu(page, 'insertTable').click()
+    await page.locator('.w-e-panel-content-table').waitFor({ state: 'visible' })
+    await page.locator('.w-e-panel-content-table td[data-x="1"][data-y="1"]').click()
+
+    await page.locator('[data-testid="editor-textarea"] table tr')
+      .first()
+      .locator('th, td')
+      .first()
+      .click()
+    await page.keyboard.type('这是用于复现811的超长文本'.repeat(20))
+    await page.waitForTimeout(500)
+
+    const metrics = await page.evaluate(() => {
+      const table = document.querySelector('[data-testid="editor-textarea"] table.table') as HTMLElement | null
+      const rows = Array.from(document.querySelectorAll('[data-testid="editor-textarea"] table tr')) as HTMLElement[]
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!table || rows.length < 2 || !editor) {
+        throw new Error('table/rows/editor not ready')
+      }
+      table.scrollIntoView({ block: 'center', inline: 'nearest' })
+
+      const tableNode = editor.children.find((n: any) => n?.type === 'table')
+
+      if (!tableNode) {
+        throw new Error('table node not found in model')
+      }
+
+      const modelRowHeights = tableNode.children.map((row: any) => row?.height || 30)
+      const domRowHeights = rows.map(row => row.getBoundingClientRect().height)
+
+      const tableRect = table.getBoundingClientRect()
+      const firstRowRect = rows[0].getBoundingClientRect()
+
+      return {
+        modelRowHeights,
+        domRowHeights,
+        domFirstBorderOffset: firstRowRect.bottom - tableRect.top,
+        tableLeft: tableRect.left,
+        tableTop: tableRect.top,
+        tableWidth: tableRect.width,
+      }
+    })
+
+    const sampleX = metrics.tableLeft + Math.min(30, metrics.tableWidth / 3)
+    const hoverAtDomBorder = await page.evaluate(async ({ x, y }) => {
+      const table = document.querySelector('[data-testid="editor-textarea"] table.table') as HTMLElement | null
+      const editor = (window as any).wangEditorExampleBridge?.editor
+      const tableNode = editor?.children?.find((n: any) => n?.type === 'table')
+
+      if (!table || !tableNode) {
+        throw new Error('table or model table node missing')
+      }
+
+      table.dispatchEvent(new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+      }))
+      await new Promise(resolve => {
+        setTimeout(resolve, 120)
+      })
+
+      const currentTableNode = editor?.children?.find((n: any) => n?.type === 'table')
+
+      return {
+        isHoverRowBorder: !!currentTableNode?.isHoverRowBorder,
+        resizingRowIndex: currentTableNode?.resizingRowIndex ?? -1,
+      }
+    }, {
+      x: sampleX,
+      y: metrics.tableTop + metrics.domFirstBorderOffset + 1,
+    })
+
+    expect(metrics.domRowHeights[0] - metrics.modelRowHeights[0]).toBeGreaterThan(20)
+    expect(hoverAtDomBorder.isHoverRowBorder).toBe(true)
+    expect(hoverAtDomBorder.resizingRowIndex).toBe(0)
+  })
+
+  test('regression #297: column resize should work after setHtml without selecting table first', async ({ page }) => {
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      editor.setHtml(`
+        <p>before table</p>
+        <table style="width: 100%;">
+          <tbody>
+            <tr><td>col-1</td><td>col-2</td><td>col-3</td></tr>
+            <tr><td>a</td><td>b</td><td>c</td></tr>
+          </tbody>
+        </table>
+        <p>after table</p>
+      `)
+    })
+
+    const metrics = await page.evaluate(() => {
+      const table = document.querySelector('[data-testid="editor-textarea"] table.table') as HTMLTableElement | null
+      const firstCol = table?.querySelector('col') as HTMLTableColElement | null
+
+      if (!table || !firstCol) {
+        throw new Error('table not ready')
+      }
+
+      table.scrollIntoView({ block: 'center', inline: 'nearest' })
+      const tableRect = table.getBoundingClientRect()
+      const firstColWidth = Number(firstCol.getAttribute('width') || 0)
+
+      if (!Number.isFinite(firstColWidth) || firstColWidth <= 0) {
+        throw new Error('first column width is invalid')
+      }
+
+      return {
+        borderX: tableRect.left + firstColWidth,
+        borderY: tableRect.top + tableRect.height / 2,
+        beforeWidth: firstColWidth,
+      }
+    })
+
+    await page.locator('[data-testid="editor-textarea"] p').last().click()
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+      const tableNode = editor?.children?.find((n: any) => n?.type === 'table')
+
+      if (!tableNode) {
+        throw new Error('table node not found')
+      }
+
+      // 在 e2e 中直接设置索引，稳定触发列拖拽逻辑
+      tableNode.resizingIndex = 0
+    })
+
+    await page.evaluate(({ borderX, borderY }) => {
+      const hotzone = document.querySelector('.column-resizer .resizer-line-hotzone') as HTMLElement | null
+
+      if (!hotzone) {
+        throw new Error('resize hotzone not found')
+      }
+
+      hotzone.dispatchEvent(new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: borderX,
+        clientY: borderY,
+      }))
+      window.dispatchEvent(new MouseEvent('mousemove', {
+        bubbles: true,
+        cancelable: true,
+        clientX: borderX + 60,
+        clientY: borderY,
+      }))
+      window.dispatchEvent(new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+        clientX: borderX + 60,
+        clientY: borderY,
+      }))
+    }, {
+      borderX: metrics.borderX,
+      borderY: metrics.borderY,
+    })
+    await page.waitForTimeout(150)
+
+    const afterWidth = await page.evaluate(() => {
+      const firstCol = document.querySelector(
+        '[data-testid="editor-textarea"] table col',
+      ) as HTMLTableColElement | null
+
+      if (!firstCol) {
+        throw new Error('first table col not found')
+      }
+
+      return Number(firstCol.getAttribute('width') || 0)
+    })
+
+    expect(afterWidth).toBeGreaterThan(metrics.beforeWidth + 8)
+  })
+
+  test('regression #574: cutting batch-selected table cells should keep table shape and only clear selected cells', async ({ page }) => {
+    const pageErrors: string[] = []
+
+    page.on('pageerror', err => {
+      pageErrors.push(err?.stack || err?.message || String(err))
+    })
+
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      editor.setHtml(`
+        <table style="width: 100%;">
+          <tbody>
+            <tr><td>A</td><td>B</td></tr>
+            <tr><td>C</td><td>D</td></tr>
+          </tbody>
+        </table>
+      `)
+    })
+
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      const tableIndex = editor.children.findIndex((node: any) => node?.type === 'table')
+
+      if (tableIndex < 0) {
+        throw new Error('table node not found')
+      }
+
+      editor.select({
+        anchor: { path: [tableIndex, 0, 0, 0], offset: 0 },
+        focus: { path: [tableIndex, 0, 1, 0], offset: 1 },
+      })
+    })
+    await page.waitForTimeout(150)
+
+    const selectionState = await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      const tableSelection = editor.getTableSelection?.() || []
+
+      return {
+        rows: tableSelection.length,
+        cells: tableSelection.flat().length,
+      }
+    })
+
+    expect(selectionState.rows).toBeGreaterThanOrEqual(1)
+    expect(selectionState.cells).toBeGreaterThanOrEqual(2)
+
+    await page.keyboard.press('Control+X')
+    await page.waitForTimeout(120)
+
+    const tableState = await page.evaluate(() => {
+      const rows = Array.from(document.querySelectorAll('[data-testid="editor-textarea"] table tr'))
+      const matrix = rows.map(row => {
+        const cells = Array.from(row.querySelectorAll('td,th')) as HTMLElement[]
+
+        return cells.map(cell => (cell.textContent || '').replace(/\s+/g, ''))
+      })
+
+      return {
+        rowCount: rows.length,
+        colCounts: rows.map(row => row.querySelectorAll('td,th').length),
+        matrix,
+      }
+    })
+
+    expect(pageErrors).toEqual([])
+    expect(tableState.rowCount).toBe(2)
+    expect(tableState.colCounts).toEqual([2, 2])
+    expect(tableState.matrix[0]).toEqual(['', ''])
+    expect(tableState.matrix[1]).toEqual(['C', 'D'])
+  })
+
   test('pastes plain text', async ({ page }) => {
     await pasteText(page, 'pasted text')
 
@@ -222,6 +907,107 @@ test.describe('Basic Editor', () => {
     await page.locator('.w-e-panel-content-table td').first().click()
 
     await expect(page.getByTestId('editor-html')).toContainText('<table')
+  })
+
+  test('regression #47: first inserted table should be first node and removable by select-all delete/cut', async ({ page }) => {
+    await clearEditor(page)
+    await waitForMenuEnabled(page, 'insertTable')
+    await getToolbarMenu(page, 'insertTable').click()
+    await page.locator('.w-e-panel-content-table').waitFor({ state: 'visible' })
+    await page.locator('.w-e-panel-content-table td').first().click()
+    await page.waitForTimeout(120)
+
+    const afterInsertByMenu = await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      return {
+        types: (editor.children || []).map((node: any) => node?.type || ''),
+        tableCount: (editor.children || []).filter((node: any) => node?.type === 'table').length,
+      }
+    })
+
+    expect(afterInsertByMenu.tableCount).toBe(1)
+    expect(afterInsertByMenu.types[0]).toBe('table')
+
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      editor.setHtml(`
+        <table style="width: 100%;">
+          <tbody>
+            <tr><td>A</td><td>B</td></tr>
+          </tbody>
+        </table>
+      `)
+    })
+    await page.waitForTimeout(120)
+
+    await page.locator('#w-e-textarea-1').click()
+    await page.keyboard.press('Control+A')
+    await page.keyboard.press('Backspace')
+    await page.waitForTimeout(120)
+
+    const afterBackspace = await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      return {
+        tableCount: (editor.children || []).filter((node: any) => node?.type === 'table').length,
+        firstType: editor.children?.[0]?.type || '',
+      }
+    })
+
+    expect(afterBackspace.tableCount).toBe(0)
+    expect(afterBackspace.firstType).toBe('paragraph')
+
+    await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      editor.setHtml(`
+        <table style="width: 100%;">
+          <tbody>
+            <tr><td>A</td><td>B</td></tr>
+          </tbody>
+        </table>
+      `)
+    })
+    await page.waitForTimeout(120)
+
+    await page.locator('#w-e-textarea-1').click()
+    await page.keyboard.press('Control+A')
+    await page.keyboard.press('Control+X')
+    await page.waitForTimeout(120)
+
+    const afterCut = await page.evaluate(() => {
+      const editor = (window as any).wangEditorExampleBridge?.editor
+
+      if (!editor) {
+        throw new Error('editor not ready')
+      }
+
+      return {
+        tableCount: (editor.children || []).filter((node: any) => node?.type === 'table').length,
+        firstType: editor.children?.[0]?.type || '',
+      }
+    })
+
+    expect(afterCut.tableCount).toBe(0)
+    expect(afterCut.firstType).toBe('paragraph')
   })
 
   test('uploads an image as base64', async ({ page }) => {
@@ -275,6 +1061,44 @@ test.describe('Basic Editor', () => {
     await page.waitForTimeout(250)
     await expect(textareaContainer).not.toHaveClass(/w-e-full-screen-container/)
   })
+})
+
+test('regression #625: duplicated legacy ids should not break DOM-to-Slate mapping', async ({ page }) => {
+  const pageErrors: string[] = []
+
+  page.on('pageerror', err => {
+    pageErrors.push(err?.stack || err?.message || String(err))
+  })
+
+  await page.goto('/examples/default-mode.html')
+  await page.evaluate(() => {
+    const legacyRoot = document.createElement('div')
+
+    legacyRoot.id = 'legacy-editor-mock'
+    legacyRoot.innerHTML = [
+      '<div id="w-e-textarea-1" data-slate-editor data-slate-node="value">',
+      '  <p id="w-e-element-header1-0" data-slate-node="element">',
+      '    <span id="w-e-text-1" data-slate-node="text">',
+      '      <span data-slate-leaf><span data-slate-string>legacy</span></span>',
+      '    </span>',
+      '  </p>',
+      '</div>',
+    ].join('')
+    document.body.prepend(legacyRoot)
+  })
+
+  await page.getByTestId('btn-create').click()
+  await expect(getEditable(page)).toBeVisible()
+
+  await page.locator('[data-testid="editor-textarea"] [data-slate-string]').first().click()
+  await page.keyboard.press('ArrowRight')
+  await page.keyboard.type('hello-next')
+  await page.waitForTimeout(120)
+
+  const domNodeErrors = pageErrors.filter(msg => msg.includes('Cannot resolve a Slate node from DOM node'))
+
+  expect(domNodeErrors).toEqual([])
+  await expect(page.getByTestId('editor-html')).toContainText('hello-next')
 })
 
 test.describe('Multi Editors', () => {
