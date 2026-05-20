@@ -1,3 +1,0 @@
-# menus test
-
-TODO 各个 modules 中没有这块代码的测试，待编写...
