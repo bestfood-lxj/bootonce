@@ -1,3 +1,4 @@
+//cp client.mjs node_modules/vite/dist/client/client.mjs
 import "@vite/env";
 
 //#region \0@oxc-project+runtime@0.101.0/helpers/typeof.js
