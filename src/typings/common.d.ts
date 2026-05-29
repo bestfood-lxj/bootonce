@@ -20,6 +20,6 @@ declare namespace CommonType {
 
   /** add null to all properties */
   type RecordNullable<T> = {
-    [K in keyof T]?: T[K] | null;
+    [K in keyof T]?: T[K] | undefined;
   };
 }

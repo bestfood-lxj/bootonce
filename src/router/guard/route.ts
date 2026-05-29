@@ -61,7 +61,7 @@ export function createRouteGuard(router: Router) {
  *
  * @param to to route
  */
-async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw | null> {
+async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw | undefined> {
   const routeStore = useRouteStore();
 
   const notFoundRoute: RouteKey = 'not-found';
@@ -91,7 +91,7 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
     if (to.meta.constant && !isNotFoundRoute) {
       routeStore.onRouteSwitchWhenNotLoggedIn();
 
-      return null;
+      return undefined;
     }
 
     // if the user is not logged in, then switch to the login page
@@ -132,7 +132,7 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
   // the auth route is initialized
   // it is not the "not-found" route, then it is allowed to access
   if (!isNotFoundRoute) {
-    return null;
+    return undefined;
   }
 
   // it is captured by the "not-found" route, then check whether the route exists
@@ -147,7 +147,7 @@ async function initRoute(to: RouteLocationNormalized): Promise<RouteLocationRaw 
     return location;
   }
 
-  return null;
+  return undefined;
 }
 
 function handleRouteSwitch(to: RouteLocationNormalized, from: RouteLocationNormalized) {
@@ -157,6 +157,7 @@ function handleRouteSwitch(to: RouteLocationNormalized, from: RouteLocationNorma
 
     return { path: from.fullPath, replace: true, query: from.query, hash: to.hash };
   }
+  return undefined;
 }
 
 function getRouteQueryOfLoginRoute(to: RouteLocationNormalized, routeHome: RouteKey) {

@@ -6,10 +6,9 @@ html,
 body,
 #app {
   height: 100%;
-  text-autospace: normal;
+  font-size: 14px;
 }
 
 html {
   overflow-x: hidden;
-  color: rgb(var(--base-text-color));
 }

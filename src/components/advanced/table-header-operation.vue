@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'TableHeaderOperation'
-});
+defineOptions({ name: 'TableHeaderOperation' });
 
 interface Props {
-  itemAlign?: NaiveUI.Align;
   disabledDelete?: boolean;
   loading?: boolean;
 }
@@ -21,7 +18,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const columns = defineModel<NaiveUI.TableColumnCheck[]>('columns', {
+const columns = defineModel<UI.TableColumnCheck[]>('columns', {
   default: () => []
 });
 
@@ -39,36 +36,35 @@ function refresh() {
 </script>
 
 <template>
-  <NSpace :align="itemAlign" wrap justify="end" class="lt-sm:w-200px">
+  <ElSpace direction="horizontal" wrap justify="end" class="lt-sm:w-200px">
     <slot name="prefix"></slot>
     <slot name="default">
-      <NButton size="small" ghost type="primary" @click="add">
+      <ElButton plain type="primary" @click="add">
         <template #icon>
           <icon-ic-round-plus class="text-icon" />
         </template>
         {{ $t('common.add') }}
-      </NButton>
-      <NPopconfirm @positive-click="batchDelete">
-        <template #trigger>
-          <NButton size="small" ghost type="error" :disabled="disabledDelete">
+      </ElButton>
+      <ElPopconfirm :title="$t('common.confirmDelete')" @confirm="batchDelete">
+        <template #reference>
+          <ElButton type="danger" plain :disabled="disabledDelete">
             <template #icon>
               <icon-ic-round-delete class="text-icon" />
             </template>
             {{ $t('common.batchDelete') }}
-          </NButton>
+          </ElButton>
         </template>
-        {{ $t('common.confirmDelete') }}
-      </NPopconfirm>
+      </ElPopconfirm>
     </slot>
-    <NButton size="small" @click="refresh">
+    <ElButton @click="refresh">
       <template #icon>
         <icon-mdi-refresh class="text-icon" :class="{ 'animate-spin': loading }" />
       </template>
       {{ $t('common.refresh') }}
-    </NButton>
+    </ElButton>
     <TableColumnSetting v-model:columns="columns" />
     <slot name="suffix"></slot>
-  </NSpace>
+  </ElSpace>
 </template>
 
 <style scoped></style>

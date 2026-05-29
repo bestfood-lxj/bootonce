@@ -1,7 +1,7 @@
 // @unocss-include
 
 import type { Preset } from '@unocss/core';
-import type { Theme } from '@unocss/preset-mini';
+import type { Theme } from '@unocss/preset-uno';
 
 export function presetSoybeanAdmin(): Preset<Theme> {
   const preset: Preset<Theme> = {

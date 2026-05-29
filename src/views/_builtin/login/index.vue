@@ -12,6 +12,8 @@ import Register from './modules/register.vue';
 import ResetPwd from './modules/reset-pwd.vue';
 import BindWechat from './modules/bind-wechat.vue';
 
+defineOptions({ name: 'LoginPage' });
+
 interface Props {
   /** The login module */
   module?: UnionKey.LoginModule;
@@ -53,7 +55,7 @@ const bgColor = computed(() => {
 <template>
   <div class="relative size-full flex-center overflow-hidden" :style="{ backgroundColor: bgColor }">
     <WaveBg :theme-color="bgThemeColor" />
-    <NCard :bordered="false" class="relative z-4 w-auto rd-12px">
+    <ElCard class="relative z-4 w-auto rd-12px">
       <div class="w-400px lt-sm:w-300px">
         <header class="flex-y-center justify-between">
           <SystemLogo class="size-64px lt-sm:size-48px" />
@@ -83,7 +85,7 @@ const bgColor = computed(() => {
           </div>
         </main>
       </div>
-    </NCard>
+    </ElCard>
   </div>
 </template>
 

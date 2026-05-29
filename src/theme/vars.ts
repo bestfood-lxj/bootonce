@@ -4,7 +4,6 @@ function createColorPaletteVars() {
   const colorPaletteNumbers: App.Theme.ColorPaletteNumber[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 
   const colorPaletteVar = {} as App.Theme.ThemePaletteColor;
-
   colors.forEach(color => {
     colorPaletteVar[color] = `rgb(var(--${color}-color))`;
     colorPaletteNumbers.forEach(number => {

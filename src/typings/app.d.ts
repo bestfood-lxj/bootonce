@@ -4,9 +4,6 @@ declare namespace App {
   namespace Theme {
     type ColorPaletteNumber = import('@sa/color').ColorPaletteNumber;
 
-    /** NaiveUI theme overrides that can be specified in preset */
-    type NaiveUIThemeOverride = import('naive-ui').GlobalThemeOverrides;
-
     /** Theme setting */
     interface ThemeSetting {
       /** Theme scheme */
@@ -19,8 +16,6 @@ declare namespace App {
       recommendColor: boolean;
       /** Theme color */
       themeColor: string;
-      /** Theme radius */
-      themeRadius: number;
       /** Other color */
       otherColor: OtherColor;
       /** Whether info color is followed by the primary color */
@@ -31,6 +26,12 @@ declare namespace App {
         mode: UnionKey.ThemeLayoutMode;
         /** Scroll mode */
         scrollMode: UnionKey.ThemeScrollMode;
+        /**
+         * Whether to reverse the horizontal mix
+         *
+         * if true, the vertical child level menus in left and horizontal first level menus in top
+         */
+        reverseHorizontalMix: boolean;
       };
       /** Page */
       page: {
@@ -55,8 +56,9 @@ declare namespace App {
           /** Whether to show the multilingual */
           visible: boolean;
         };
+        /** Global search */
         globalSearch: {
-          /** Whether to show the GlobalSearch */
+          /** Whether to show the global search */
           visible: boolean;
         };
       };
@@ -74,8 +76,6 @@ declare namespace App {
         height: number;
         /** Tab mode */
         mode: UnionKey.ThemeTabMode;
-        /** Whether to close tab by middle click */
-        closeTabByMiddleClick: boolean;
       };
       /** Fixed header and tab */
       fixedHeaderAndTab: boolean;
@@ -87,17 +87,12 @@ declare namespace App {
         width: number;
         /** Collapsed sider width */
         collapsedWidth: number;
-        /** Sider width when the layout is 'vertical-mix', 'top-hybrid-sidebar-first', or 'top-hybrid-header-first' */
+        /** Sider width when the layout is 'vertical-mix' or 'horizontal-mix' */
         mixWidth: number;
-        /**
-         * Collapsed sider width when the layout is 'vertical-mix', 'top-hybrid-sidebar-first', or
-         * 'top-hybrid-header-first'
-         */
+        /** Collapsed sider width when the layout is 'vertical-mix' or 'horizontal-mix' */
         mixCollapsedWidth: number;
-        /** Child menu width when the layout is 'vertical-mix', 'top-hybrid-sidebar-first', or 'top-hybrid-header-first' */
+        /** Child menu width when the layout is 'vertical-mix' or 'horizontal-mix' */
         mixChildMenuWidth: number;
-        /** Whether to auto select the first submenu */
-        autoSelectFirstMenu: boolean;
       };
       /** Footer */
       footer: {
@@ -107,10 +102,7 @@ declare namespace App {
         fixed: boolean;
         /** Footer height */
         height: number;
-        /**
-         * Whether float the footer to the right when the layout is 'top-hybrid-sidebar-first' or
-         * 'top-hybrid-header-first'
-         */
+        /** Whether float the footer to the right when the layout is 'horizontal-mix' */
         right: boolean;
       };
       /** Watermark */
@@ -121,10 +113,6 @@ declare namespace App {
         text: string;
         /** Whether to use user name as watermark text */
         enableUserName: boolean;
-        /** Whether to use current time as watermark text */
-        enableTime: boolean;
-        /** Time format for watermark text */
-        timeFormat: string;
       };
       /** define some theme settings tokens, will transform to css variables */
       tokens: {
@@ -191,13 +179,6 @@ declare namespace App {
     type RouteMap = import('@elegant-router/types').RouteMap;
     type RoutePath = import('@elegant-router/types').RoutePath;
     type LastLevelRouteKey = import('@elegant-router/types').LastLevelRouteKey;
-
-    /** The router push options */
-    type RouterPushOptions = {
-      query?: Record<string, string>;
-      params?: Record<string, string>;
-      force?: boolean;
-    };
 
     /** The global header props */
     interface HeaderProps {
@@ -282,10 +263,10 @@ declare namespace App {
     };
 
     /** Form rule */
-    type FormRule = import('naive-ui').FormItemRule;
+    type FormRule = import('element-plus').FormItemRule;
 
     /** The global dropdown key */
-    type DropdownKey = 'closeCurrent' | 'closeOther' | 'closeLeft' | 'closeRight' | 'closeAll' | 'pin' | 'unpin';
+    type DropdownKey = 'closeCurrent' | 'closeOther' | 'closeLeft' | 'closeRight' | 'closeAll';
   }
 
   /**
@@ -327,7 +308,6 @@ declare namespace App {
         cancel: string;
         close: string;
         check: string;
-        selectAll: string;
         expandColumn: string;
         columnSetting: string;
         config: string;
@@ -371,107 +351,62 @@ declare namespace App {
         tokenExpired: string;
       };
       theme: {
-        themeDrawerTitle: string;
-        tabs: {
-          appearance: string;
-          layout: string;
-          general: string;
-          preset: string;
-        };
-        appearance: {
-          themeSchema: { title: string } & Record<UnionKey.ThemeScheme, string>;
-          grayscale: string;
-          colourWeakness: string;
-          themeColor: {
-            title: string;
-            followPrimary: string;
-          } & Record<Theme.ThemeColorKey, string>;
-          recommendColor: string;
-          recommendColorDesc: string;
-          themeRadius: {
-            title: string;
-          };
-          preset: {
-            title: string;
-            apply: string;
-            applySuccess: string;
-            [key: string]:
-              | {
-                  name: string;
-                  desc: string;
-                }
-              | string;
-          };
-        };
-        layout: {
-          layoutMode: { title: string } & Record<UnionKey.ThemeLayoutMode, string> & {
-              [K in `${UnionKey.ThemeLayoutMode}_detail`]: string;
-            };
-          tab: {
-            title: string;
-            visible: string;
-            cache: string;
-            cacheTip: string;
-            height: string;
-            mode: { title: string } & Record<UnionKey.ThemeTabMode, string>;
-            closeByMiddleClick: string;
-            closeByMiddleClickTip: string;
-          };
-          header: {
-            title: string;
-            height: string;
-            breadcrumb: {
-              visible: string;
-              showIcon: string;
-            };
-          };
-          sider: {
-            title: string;
-            inverted: string;
-            width: string;
-            collapsedWidth: string;
-            mixWidth: string;
-            mixCollapsedWidth: string;
-            mixChildMenuWidth: string;
-            autoSelectFirstMenu: string;
-            autoSelectFirstMenuTip: string;
-          };
-          footer: {
-            title: string;
-            visible: string;
-            fixed: string;
-            height: string;
-            right: string;
-          };
-          content: {
-            title: string;
-            scrollMode: { title: string; tip: string } & Record<UnionKey.ThemeScrollMode, string>;
-            page: {
-              animate: string;
-              mode: { title: string } & Record<UnionKey.ThemePageAnimateMode, string>;
-            };
-            fixedHeaderAndTab: string;
-          };
-        };
-        general: {
+        themeSchema: { title: string } & Record<UnionKey.ThemeScheme, string>;
+        grayscale: string;
+        colourWeakness: string;
+        layoutMode: { title: string; reverseHorizontalMix: string } & Record<UnionKey.ThemeLayoutMode, string>;
+        recommendColor: string;
+        recommendColorDesc: string;
+        themeColor: {
           title: string;
-          watermark: {
-            title: string;
+          followPrimary: string;
+        } & Record<Theme.ThemeColorKey, string>;
+        scrollMode: { title: string } & Record<UnionKey.ThemeScrollMode, string>;
+        page: {
+          animate: string;
+          mode: { title: string } & Record<UnionKey.ThemePageAnimateMode, string>;
+        };
+        fixedHeaderAndTab: string;
+        header: {
+          height: string;
+          breadcrumb: {
             visible: string;
-            text: string;
-            enableUserName: string;
-            enableTime: string;
-            timeFormat: string;
+            showIcon: string;
           };
           multilingual: {
-            title: string;
             visible: string;
           };
           globalSearch: {
-            title: string;
             visible: string;
           };
         };
+        tab: {
+          visible: string;
+          cache: string;
+          height: string;
+          mode: { title: string } & Record<UnionKey.ThemeTabMode, string>;
+        };
+        sider: {
+          inverted: string;
+          width: string;
+          collapsedWidth: string;
+          mixWidth: string;
+          mixCollapsedWidth: string;
+          mixChildMenuWidth: string;
+        };
+        footer: {
+          visible: string;
+          fixed: string;
+          height: string;
+          right: string;
+        };
+        watermark: {
+          visible: string;
+          text: string;
+          enableUserName: string;
+        };
+        themeDrawerTitle: string;
+        pageFunTitle: string;
         configOperation: {
           copyConfig: string;
           copySuccessMsg: string;
@@ -527,6 +462,19 @@ declare namespace App {
             title: string;
           };
         };
+        about: {
+          title: string;
+          introduction: string;
+          projectInfo: {
+            title: string;
+            version: string;
+            latestBuildTime: string;
+            githubLink: string;
+            previewLink: string;
+          };
+          prdDep: string;
+          devDep: string;
+        };
         home: {
           branchDesc: string;
           greeting: string;
@@ -555,6 +503,177 @@ declare namespace App {
           };
           creativity: string;
         };
+        function: {
+          tab: {
+            tabOperate: {
+              title: string;
+              addTab: string;
+              addTabDesc: string;
+              closeTab: string;
+              closeCurrentTab: string;
+              closeAboutTab: string;
+              addMultiTab: string;
+              addMultiTabDesc1: string;
+              addMultiTabDesc2: string;
+            };
+            tabTitle: {
+              title: string;
+              changeTitle: string;
+              change: string;
+              resetTitle: string;
+              reset: string;
+            };
+          };
+          multiTab: {
+            routeParam: string;
+            backTab: string;
+          };
+          toggleAuth: {
+            toggleAccount: string;
+            authHook: string;
+            superAdminVisible: string;
+            adminVisible: string;
+            adminOrUserVisible: string;
+          };
+          request: {
+            repeatedErrorOccurOnce: string;
+            repeatedError: string;
+            repeatedErrorMsg1: string;
+            repeatedErrorMsg2: string;
+          };
+        };
+        alova: {
+          scenes: {
+            captchaSend: string;
+            autoRequest: string;
+            visibilityRequestTips: string;
+            pollingRequestTips: string;
+            networkRequestTips: string;
+            refreshTime: string;
+            startRequest: string;
+            stopRequest: string;
+            requestCrossComponent: string;
+            triggerAllRequest: string;
+          };
+        };
+        manage: {
+          common: {
+            status: {
+              enable: string;
+              disable: string;
+            };
+          };
+          role: {
+            title: string;
+            roleName: string;
+            roleCode: string;
+            roleStatus: string;
+            roleDesc: string;
+            form: {
+              roleName: string;
+              roleCode: string;
+              roleStatus: string;
+              roleDesc: string;
+            };
+            addRole: string;
+            editRole: string;
+            menuAuth: string;
+            buttonAuth: string;
+          };
+          user: {
+            title: string;
+            userName: string;
+            userGender: string;
+            nickName: string;
+            userPhone: string;
+            userEmail: string;
+            userStatus: string;
+            userRole: string;
+            form: {
+              userName: string;
+              userGender: string;
+              nickName: string;
+              userPhone: string;
+              userEmail: string;
+              userStatus: string;
+              userRole: string;
+            };
+            addUser: string;
+            editUser: string;
+            gender: {
+              male: string;
+              female: string;
+            };
+          };
+          menu: {
+            home: string;
+            title: string;
+            id: string;
+            parentId: string;
+            menuType: string;
+            menuName: string;
+            routeName: string;
+            routePath: string;
+            pathParam: string;
+            layout: string;
+            page: string;
+            i18nKey: string;
+            icon: string;
+            localIcon: string;
+            iconTypeTitle: string;
+            order: string;
+            constant: string;
+            keepAlive: string;
+            href: string;
+            hideInMenu: string;
+            activeMenu: string;
+            multiTab: string;
+            fixedIndexInTab: string;
+            query: string;
+            button: string;
+            buttonCode: string;
+            buttonDesc: string;
+            menuStatus: string;
+            form: {
+              home: string;
+              menuType: string;
+              menuName: string;
+              routeName: string;
+              routePath: string;
+              pathParam: string;
+              layout: string;
+              page: string;
+              i18nKey: string;
+              icon: string;
+              localIcon: string;
+              order: string;
+              keepAlive: string;
+              href: string;
+              hideInMenu: string;
+              activeMenu: string;
+              multiTab: string;
+              fixedInTab: string;
+              fixedIndexInTab: string;
+              queryKey: string;
+              queryValue: string;
+              button: string;
+              buttonCode: string;
+              buttonDesc: string;
+              menuStatus: string;
+            };
+            addMenu: string;
+            editMenu: string;
+            addChildMenu: string;
+            type: {
+              directory: string;
+              menu: string;
+            };
+            iconType: {
+              iconify: string;
+              local: string;
+            };
+          };
+        };
       };
       form: {
         required: string;
@@ -580,11 +699,6 @@ declare namespace App {
       };
       datatable: {
         itemCount: string;
-        fixed: {
-          left: string;
-          right: string;
-          unFixed: string;
-        };
       };
     };
 

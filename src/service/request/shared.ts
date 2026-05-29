@@ -28,14 +28,14 @@ async function handleRefreshToken() {
 }
 
 export async function handleExpiredRequest(state: RequestInstanceState) {
-  if (!state.refreshTokenPromise) {
-    state.refreshTokenPromise = handleRefreshToken();
+  if (!state.refreshTokenFn) {
+    state.refreshTokenFn = handleRefreshToken();
   }
 
-  const success = await state.refreshTokenPromise;
+  const success = await state.refreshTokenFn;
 
   setTimeout(() => {
-    state.refreshTokenPromise = null;
+    state.refreshTokenFn = null;
   }, 1000);
 
   return success;
@@ -51,8 +51,9 @@ export function showErrorMsg(state: RequestInstanceState, message: string) {
   if (!isExist) {
     state.errMsgStack.push(message);
 
-    window.$message?.error(message, {
-      onLeave: () => {
+    window.$message?.error({
+      message,
+      onClose: () => {
         state.errMsgStack = state.errMsgStack.filter(msg => msg !== message);
 
         setTimeout(() => {

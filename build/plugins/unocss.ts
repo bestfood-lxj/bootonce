@@ -1,7 +1,7 @@
 import process from 'node:process';
 import path from 'node:path';
-import { presetIcons } from 'unocss';
-import unocss from 'unocss/vite';
+import unocss from '@unocss/vite';
+import presetIcons from '@unocss/preset-icons';
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders';
 
 export function setupUnocss(viteEnv: Env.ImportMeta) {

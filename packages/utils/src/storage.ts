@@ -32,8 +32,7 @@ export function createStorage<T extends object>(type: StorageType, storagePrefix
           storageData = JSON.parse(json);
         } catch {}
 
-        // storageData may be `false` if it is boolean type
-        if (storageData !== null) {
+        if (storageData) {
           return storageData as T[K];
         }
       }

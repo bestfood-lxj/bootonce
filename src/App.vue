@@ -1,39 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NConfigProvider, darkTheme } from 'naive-ui';
-import type { WatermarkProps } from 'naive-ui';
+import type { WatermarkProps } from 'element-plus';
 import { useAppStore } from './store/modules/app';
 import { useThemeStore } from './store/modules/theme';
-import { naiveDateLocales, naiveLocales } from './locales/naive';
+import { useAuthStore } from './store/modules/auth';
+import { UILocales } from './locales/ui';
 
-defineOptions({
-  name: 'App'
-});
+defineOptions({ name: 'App' });
 
 const appStore = useAppStore();
 const themeStore = useThemeStore();
-
-const naiveDarkTheme = computed(() => (themeStore.darkMode ? darkTheme : undefined));
-
-const naiveLocale = computed(() => {
-  return naiveLocales[appStore.locale];
-});
-
-const naiveDateLocale = computed(() => {
-  return naiveDateLocales[appStore.locale];
+const authStore = useAuthStore();
+const locale = computed(() => {
+  return UILocales[appStore.locale];
 });
 
 const watermarkProps = computed<WatermarkProps>(() => {
+  const content =
+    themeStore.watermark.enableUserName && authStore.userInfo.userName
+      ? authStore.userInfo.userName
+      : themeStore.watermark.text;
+
   return {
-    content: themeStore.watermarkContent,
+    content: themeStore.watermark.visible ? content : '',
     cross: true,
-    fullscreen: true,
     fontSize: 16,
     lineHeight: 16,
-    width: 384,
-    height: 384,
-    xOffset: 12,
-    yOffset: 60,
+    gap: [100, 120],
     rotate: -15,
     zIndex: 9999
   };
@@ -41,18 +34,13 @@ const watermarkProps = computed<WatermarkProps>(() => {
 </script>
 
 <template>
-  <NConfigProvider
-    :theme="naiveDarkTheme"
-    :theme-overrides="themeStore.naiveTheme"
-    :locale="naiveLocale"
-    :date-locale="naiveDateLocale"
-    class="h-full"
-  >
+  <ElConfigProvider :locale="locale">
     <AppProvider>
-      <RouterView class="bg-layout" />
-      <NWatermark v-if="themeStore.watermark.visible" v-bind="watermarkProps" />
+      <ElWatermark class="h-full" v-bind="watermarkProps">
+        <RouterView class="bg-layout" />
+      </ElWatermark>
     </AppProvider>
-  </NConfigProvider>
+  </ElConfigProvider>
 </template>
 
 <style scoped></style>

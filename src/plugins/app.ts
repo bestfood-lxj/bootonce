@@ -1,6 +1,5 @@
 import { h } from 'vue';
 import type { App } from 'vue';
-import { NButton } from 'naive-ui';
 import { $t } from '@/locales';
 
 export function setupAppErrorHandle(app: App) {
@@ -15,6 +14,7 @@ export function setupAppVersionNotification() {
   const UPDATE_CHECK_INTERVAL = 3 * 60 * 1000;
 
   const canAutoUpdateApp = import.meta.env.VITE_AUTOMATICALLY_DETECT_UPDATE === 'Y' && import.meta.env.PROD;
+
   if (!canAutoUpdateApp) return;
 
   let isShow = false;
@@ -25,7 +25,7 @@ export function setupAppVersionNotification() {
 
     const buildTime = await getHtmlBuildTime();
 
-    // If failed to get build time or build time hasn't changed, no update is needed.
+    // If failed to get build time or build time hasn't changed, no update is needed
     if (!buildTime || buildTime === BUILD_TIME) {
       return;
     }
@@ -33,23 +33,24 @@ export function setupAppVersionNotification() {
     isShow = true;
 
     // Show update notification
-    const n = window.$notification?.create({
+    const n = window.$notification!({
+      duration: 0,
       title: $t('system.updateTitle'),
-      content: $t('system.updateContent'),
-      action() {
-        return h('div', { style: { display: 'flex', justifyContent: 'end', gap: '12px', width: '325px' } }, [
+      message: h('div', {}, [
+        h('p', {}, $t('system.updateContent')),
+        h('div', { style: { display: 'flex', justifyContent: 'end', gap: '12px' } }, [
           h(
-            NButton,
+            ElButton,
             {
               onClick() {
-                n?.destroy();
+                n?.close();
                 isShow = false;
               }
             },
             () => $t('system.updateCancel')
           ),
           h(
-            NButton,
+            ElButton,
             {
               type: 'primary',
               onClick() {
@@ -58,21 +59,19 @@ export function setupAppVersionNotification() {
             },
             () => $t('system.updateConfirm')
           )
-        ]);
-      },
+        ])
+      ]),
       onClose() {
         isShow = false;
       }
     });
   };
-
   const startUpdateInterval = () => {
     if (updateInterval) {
       clearInterval(updateInterval);
     }
     updateInterval = setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL);
   };
-
   // If updates should be checked, set up the visibility change listener and start the update interval
   if (!isShow && document.visibilityState === 'visible') {
     // Check for updates when the document is visible
@@ -82,7 +81,6 @@ export function setupAppVersionNotification() {
         startUpdateInterval();
       }
     });
-
     // Start the update interval
     startUpdateInterval();
   }
@@ -95,6 +93,8 @@ async function getHtmlBuildTime(): Promise<string | null> {
     const res = await fetch(`${baseUrl}index.html?time=${Date.now()}`);
 
     if (!res.ok) {
+      // eslint-disable-next-line no-console
+      console.error('getHtmlBuildTime error:', res.status, res.statusText);
       return null;
     }
 
@@ -102,7 +102,8 @@ async function getHtmlBuildTime(): Promise<string | null> {
     const match = html.match(/<meta name="buildTime" content="(.*)">/);
     return match?.[1] || null;
   } catch (error) {
-    window.console.error('getHtmlBuildTime error:', error);
+    // eslint-disable-next-line no-console
+    console.error('getHtmlBuildTime error:', error);
     return null;
   }
 }

@@ -4,9 +4,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'HeaderBanner'
-});
+defineOptions({ name: 'HeaderBanner' });
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
@@ -15,33 +13,21 @@ const gap = computed(() => (appStore.isMobile ? 0 : 16));
 
 interface StatisticData {
   id: number;
-  label: string;
-  value: string;
+  title: string;
+  value: number;
 }
 
 const statisticData = computed<StatisticData[]>(() => [
-  {
-    id: 0,
-    label: $t('page.home.projectCount'),
-    value: '25'
-  },
-  {
-    id: 1,
-    label: $t('page.home.todo'),
-    value: '4/16'
-  },
-  {
-    id: 2,
-    label: $t('page.home.message'),
-    value: '12'
-  }
+  { id: 0, title: $t('page.home.projectCount'), value: 25 },
+  { id: 1, title: $t('page.home.todo'), value: 4, formatter: (val: number) => `${val}/${16}` },
+  { id: 2, title: $t('page.home.message'), value: 12 }
 ]);
 </script>
 
 <template>
-  <NCard :bordered="false" class="card-wrapper">
-    <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
-      <NGi span="24 s:24 m:18">
+  <ElCard class="card-wrapper">
+    <ElRow :gutter="gap" class="px-8px">
+      <ElCol :md="18" :sm="24">
         <div class="flex-y-center">
           <div class="size-72px shrink-0 overflow-hidden rd-1/2">
             <img src="@/assets/imgs/soybean.jpg" class="size-full" />
@@ -53,14 +39,14 @@ const statisticData = computed<StatisticData[]>(() => [
             <p class="text-#999 leading-30px">{{ $t('page.home.weatherDesc') }}</p>
           </div>
         </div>
-      </NGi>
-      <NGi span="24 s:24 m:6">
-        <NSpace :size="24" justify="end">
-          <NStatistic v-for="item in statisticData" :key="item.id" class="whitespace-nowrap" v-bind="item" />
-        </NSpace>
-      </NGi>
-    </NGrid>
-  </NCard>
+      </ElCol>
+      <ElCol :md="6" :sm="24">
+        <ElSpace direction="horizontal" class="w-full justify-end" :size="24">
+          <ElStatistic v-for="item in statisticData" :key="item.id" class="whitespace-nowrap" v-bind="item" />
+        </ElSpace>
+      </ElCol>
+    </ElRow>
+  </ElCard>
 </template>
 
 <style scoped></style>

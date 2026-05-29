@@ -3,11 +3,8 @@ import { computed } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { SimpleScrollbar } from '@sa/materials';
 import { transformColorWithOpacity } from '@sa/color';
-import type { RouteKey } from '@elegant-router/types';
 
-defineOptions({
-  name: 'FirstLevelMenu'
-});
+defineOptions({ name: 'FirstLevelMenu' });
 
 interface Props {
   menus: App.Global.Menu[];
@@ -21,7 +18,7 @@ interface Props {
 const props = defineProps<Props>();
 
 interface Emits {
-  (e: 'select', menuKey: RouteKey): boolean;
+  (e: 'select', menu: App.Global.Menu): boolean;
   (e: 'toggleSiderCollapse'): void;
 }
 
@@ -48,8 +45,8 @@ const selectedBgColor = computed(() => {
   return darkMode ? dark : light;
 });
 
-function handleClickMixMenu(menuKey: RouteKey) {
-  emit('select', menuKey);
+function handleClickMixMenu(menu: App.Global.Menu) {
+  emit('select', menu);
 }
 
 function toggleSiderCollapse() {
@@ -89,7 +86,7 @@ function toggleSiderCollapse() {
         :icon="menu.icon"
         :active="menu.key === activeMenuKey"
         :is-mini="siderCollapse"
-        @click="handleClickMixMenu(menu.routeKey)"
+        @click="handleClickMixMenu(menu)"
       />
     </SimpleScrollbar>
     <MenuToggler

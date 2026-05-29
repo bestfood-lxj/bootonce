@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'LookForward'
-});
+defineOptions({ name: 'LookForward' });
 </script>
 
 <template>

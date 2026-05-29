@@ -4,9 +4,7 @@ import Clipboard from 'clipboard';
 import { useThemeStore } from '@/store/modules/theme';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'ConfigOperation'
-});
+defineOptions({ name: 'ConfigOperation' });
 
 const themeStore = useThemeStore();
 
@@ -48,9 +46,9 @@ onMounted(() => {
 <template>
   <div class="w-full flex justify-between">
     <textarea id="themeConfigCopyTarget" v-model="dataClipboardText" class="absolute opacity-0 -z-1" />
-    <NButton type="error" ghost @click="handleReset">{{ $t('theme.configOperation.resetConfig') }}</NButton>
+    <ElButton type="danger" plain @click="handleReset">{{ $t('theme.configOperation.resetConfig') }}</ElButton>
     <div ref="domRef" data-clipboard-target="#themeConfigCopyTarget">
-      <NButton type="primary">{{ $t('theme.configOperation.copyConfig') }}</NButton>
+      <ElButton type="primary">{{ $t('theme.configOperation.copyConfig') }}</ElButton>
     </div>
   </div>
 </template>

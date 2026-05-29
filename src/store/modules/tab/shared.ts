@@ -199,18 +199,6 @@ export function getFixedTabIds(tabs: App.Global.Tab[]) {
 }
 
 /**
- * Reorder fixed tabs fixedIndex
- *
- * @param tabs
- */
-export function reorderFixedTabs(tabs: App.Global.Tab[]) {
-  const fixedTabs = getFixedTabs(tabs);
-  fixedTabs.forEach((t, i) => {
-    t.fixedIndex = i;
-  });
-}
-
-/**
  * Update tabs label
  *
  * @param tabs

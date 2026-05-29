@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'FullScreen'
-});
+defineOptions({ name: 'FullScreen' });
 
 interface Props {
   full?: boolean;

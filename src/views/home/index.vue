@@ -14,33 +14,32 @@ const gap = computed(() => (appStore.isMobile ? 0 : 16));
 </script>
 
 <template>
-  <NSpace vertical :size="16">
-    <NAlert :title="$t('common.tip')" type="warning">
-      {{ $t('page.home.branchDesc') }}
-    </NAlert>
-    <HeaderBanner />
-    <CardData />
-    <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
-      <NGi span="24 s:24 m:14">
-        <NCard :bordered="false" class="card-wrapper">
-          <LineChart />
-        </NCard>
-      </NGi>
-      <NGi span="24 s:24 m:10">
-        <NCard :bordered="false" class="card-wrapper">
-          <PieChart />
-        </NCard>
-      </NGi>
-    </NGrid>
-    <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
-      <NGi span="24 s:24 m:14">
+  <ElSpace direction="vertical" fill class="full-space pb-0" :size="0">
+    <HeaderBanner class="mb-16px" />
+    <CardData class="mb-16px" />
+    <ElRow :gutter="gap" class="w-full">
+      <ElCol :lg="14" :sm="24" class="mb-16px">
+        <LineChart />
+      </ElCol>
+      <ElCol :lg="10" :sm="24" class="mb-16px">
+        <PieChart />
+      </ElCol>
+    </ElRow>
+    <ElRow :gutter="gap">
+      <ElCol :lg="14" :sm="24" class="mb-16px">
         <ProjectNews />
-      </NGi>
-      <NGi span="24 s:24 m:10">
+      </ElCol>
+      <ElCol :lg="10" :sm="24" class="mb-16px">
         <CreativityBanner />
-      </NGi>
-    </NGrid>
-  </NSpace>
+      </ElCol>
+    </ElRow>
+  </ElSpace>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.full-space {
+  > :deep(.el-space__item) {
+    width: 100%;
+  }
+}
+</style>

@@ -19,7 +19,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const { toLogin, redirectFromLogin } = useRouterPush(false);
   const { loading: loginLoading, startLoading, endLoading } = useLoading();
 
-  const token = ref('');
+  const token = ref(getToken());
 
   const userInfo: Api.Auth.UserInfo = reactive({
     userId: '',
@@ -77,15 +77,13 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     const lastLoginUserId = localStg.get('lastLoginUserId');
 
     // Clear all tabs if current user is different from previous user
-    if (!lastLoginUserId || lastLoginUserId !== userInfo.userId) {
+    if (lastLoginUserId !== userInfo.userId) {
       localStg.remove('globalTabs');
       tabStore.clearTabs();
 
-      localStg.remove('lastLoginUserId');
       return true;
     }
 
-    localStg.remove('lastLoginUserId');
     return false;
   }
 
@@ -117,7 +115,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
         window.$notification?.success({
           title: $t('page.login.common.loginSuccess'),
-          content: $t('page.login.common.welcomeBack', { userName: userInfo.userName }),
+          message: $t('page.login.common.welcomeBack', { userName: userInfo.userName }),
           duration: 4500
         });
       }
@@ -159,10 +157,9 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   async function initUserInfo() {
-    const maybeToken = getToken();
+    const hasToken = getToken();
 
-    if (maybeToken) {
-      token.value = maybeToken;
+    if (hasToken) {
       const pass = await getUserInfo();
 
       if (!pass) {

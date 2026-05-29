@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'ReloadButton'
-});
+defineOptions({ name: 'ReloadButton' });
 
 interface Props {
   loading?: boolean;

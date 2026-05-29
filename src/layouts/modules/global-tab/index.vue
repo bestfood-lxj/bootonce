@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, reactive, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useElementBounding } from '@vueuse/core';
 import { PageTab } from '@sa/materials';
@@ -10,9 +10,7 @@ import { isPC } from '@/utils/agent';
 import BetterScroll from '@/components/custom/better-scroll.vue';
 import ContextMenu from './context-menu.vue';
 
-defineOptions({
-  name: 'GlobalTab'
-});
+defineOptions({ name: 'GlobalTab' });
 
 const route = useRoute();
 const appStore = useAppStore();
@@ -26,8 +24,6 @@ const tabRef = ref<HTMLElement>();
 const isPCFlag = isPC();
 
 const TAB_DATA_ID = 'data-tab-id';
-const MIDDLE_MOUSE_BUTTON = 1;
-const RIGHT_MOUSE_BUTTON = 2;
 
 type TabNamedNodeMap = NamedNodeMap & {
   [TAB_DATA_ID]: Attr;
@@ -86,26 +82,6 @@ function handleCloseTab(tab: App.Global.Tab) {
   tabStore.removeTab(tab.id);
 }
 
-function handleMousedown(e: MouseEvent, tab: App.Global.Tab) {
-  const isMiddleClick = e.button === MIDDLE_MOUSE_BUTTON;
-  if (!isMiddleClick || !themeStore.tab.closeTabByMiddleClick) {
-    return;
-  }
-
-  if (tabStore.isTabRetain(tab.id)) {
-    return;
-  }
-
-  e.preventDefault();
-  handleCloseTab(tab);
-}
-
-function switchTab(e: MouseEvent, tab: App.Global.Tab) {
-  if ([MIDDLE_MOUSE_BUTTON, RIGHT_MOUSE_BUTTON].includes(e.button)) return;
-
-  tabStore.switchRouteByTab(tab);
-}
-
 async function refresh() {
   appStore.reloadPage(500);
 }
@@ -117,7 +93,7 @@ interface DropdownConfig {
   tabId: string;
 }
 
-const dropdown: DropdownConfig = reactive({
+const dropdown = ref<DropdownConfig>({
   visible: false,
   x: 0,
   y: 0,
@@ -125,7 +101,7 @@ const dropdown: DropdownConfig = reactive({
 });
 
 function setDropdown(config: Partial<DropdownConfig>) {
-  Object.assign(dropdown, config);
+  Object.assign(dropdown.value, config);
 }
 
 let isClickContextMenu = false;
@@ -143,7 +119,7 @@ async function handleContextMenu(e: MouseEvent, tabId: string) {
 
   isClickContextMenu = true;
 
-  const DURATION = dropdown.visible ? 150 : 0;
+  const DURATION = dropdown.value.visible ? 150 : 0;
 
   setDropdown({ visible: false });
 
@@ -191,9 +167,7 @@ init();
         <div
           ref="tabRef"
           class="h-full flex pr-18px"
-          :class="[
-            themeStore.tab.mode === 'chrome' || themeStore.tab.mode === 'slider' ? 'items-end' : 'items-center gap-12px'
-          ]"
+          :class="[themeStore.tab.mode === 'chrome' ? 'items-end' : 'items-center gap-12px']"
         >
           <PageTab
             v-for="tab in tabStore.tabs"
@@ -204,8 +178,7 @@ init();
             :active="tab.id === tabStore.activeTabId"
             :active-color="themeStore.themeColor"
             :closable="!tabStore.isTabRetain(tab.id)"
-            @pointerdown="switchTab($event, tab)"
-            @mousedown="handleMousedown($event, tab)"
+            @click="tabStore.switchRouteByTab(tab)"
             @close="handleCloseTab(tab)"
             @contextmenu="handleContextMenu($event, tab.id)"
           >
@@ -217,7 +190,9 @@ init();
         </div>
       </BetterScroll>
     </div>
-    <ReloadButton :loading="!appStore.reloadFlag" @click="refresh" />
+    <div>
+      <ReloadButton :loading="!appStore.reloadFlag" @click="refresh" />
+    </div>
     <FullScreen :full="appStore.fullContent" @click="appStore.toggleFullContent" />
   </DarkModeContainer>
   <ContextMenu

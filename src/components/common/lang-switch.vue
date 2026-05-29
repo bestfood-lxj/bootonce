@@ -2,9 +2,7 @@
 import { computed } from 'vue';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'LangSwitch'
-});
+defineOptions({ name: 'LangSwitch' });
 
 interface Props {
   /** Current language */
@@ -31,31 +29,41 @@ const tooltipContent = computed(() => {
   return $t('icon.lang');
 });
 
-/** Add bottom margin to all options except the last one for proper visual separation */
-const dropdownOptions = computed(() => {
-  const lastIndex = props.langOptions.length - 1;
-
-  return props.langOptions.map((option, index) => ({
-    ...option,
-    props: {
-      class: index < lastIndex ? 'mb-1' : undefined
-    }
-  }));
-});
-
 function changeLang(lang: App.I18n.LangType) {
   emit('changeLang', lang);
 }
 </script>
 
 <template>
-  <NDropdown :value="lang" :options="dropdownOptions" trigger="hover" @select="changeLang">
+  <ElDropdown trigger="click">
     <div>
       <ButtonIcon :tooltip-content="tooltipContent" tooltip-placement="left">
         <SvgIcon icon="heroicons:language" />
       </ButtonIcon>
     </div>
-  </NDropdown>
+    <template #dropdown>
+      <ElDropdownMenu>
+        <ElDropdownItem
+          v-for="{ key, label } in langOptions"
+          :key="key"
+          :value="key"
+          class="mx-4px my-1px"
+          :class="{ 'is-active': key === lang }"
+          @click="changeLang(key)"
+        >
+          {{ label }}
+        </ElDropdownItem>
+      </ElDropdownMenu>
+    </template>
+  </ElDropdown>
 </template>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-dropdown-menu__item) {
+  border-radius: 6px;
+}
+:deep(.is-active) {
+  background-color: var(--el-dropdown-menuItem-hover-fill);
+  color: var(--el-dropdown-menuItem-hover-color);
+}
+</style>

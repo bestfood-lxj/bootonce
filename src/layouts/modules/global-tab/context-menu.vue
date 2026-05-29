@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { VNode } from 'vue';
+import type { DropdownInstance } from 'element-plus';
 import { useTabStore } from '@/store/modules/tab';
 import { useSvgIcon } from '@/hooks/common/icon';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'ContextMenu'
-});
+defineOptions({ name: 'ContextMenu' });
 
 interface Props {
   /** ClientX */
@@ -24,9 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
   disabledKeys: () => []
 });
 
-const visible = defineModel<boolean>('visible');
-
-const { removeTab, clearTabs, clearLeftTabs, clearRightTabs, fixTab, unfixTab, isTabRetain, homeTab } = useTabStore();
+const { removeTab, clearTabs, clearLeftTabs, clearRightTabs } = useTabStore();
 const { SvgIconVNode } = useSvgIcon();
 
 type DropdownOption = {
@@ -64,23 +61,6 @@ const options = computed(() => {
       icon: SvgIconVNode({ icon: 'ant-design:line-outlined', fontSize: 18 })
     }
   ];
-
-  if (props.tabId !== homeTab?.id) {
-    if (isTabRetain(props.tabId)) {
-      opts.push({
-        key: 'unpin',
-        label: $t('dropdown.unpin'),
-        icon: SvgIconVNode({ icon: 'mdi:pin-off-outline', fontSize: 18 })
-      });
-    } else {
-      opts.push({
-        key: 'pin',
-        label: $t('dropdown.pin'),
-        icon: SvgIconVNode({ icon: 'mdi:pin-outline', fontSize: 18 })
-      });
-    }
-  }
-
   const { excludeKeys, disabledKeys } = props;
 
   const result = opts.filter(opt => !excludeKeys.includes(opt.key));
@@ -96,8 +76,21 @@ const options = computed(() => {
   return result;
 });
 
+const visible = defineModel<boolean>('visible');
+
+const dropdown = ref<DropdownInstance>();
+
+watch(visible, val => {
+  if (val) {
+    dropdown.value!.handleOpen();
+  } else {
+    dropdown.value!.handleClose();
+  }
+});
+
 function hideDropdown() {
   visible.value = false;
+  dropdown.value!.handleClose();
 }
 
 const dropdownAction: Record<App.Global.DropdownKey, () => void> = {
@@ -115,12 +108,6 @@ const dropdownAction: Record<App.Global.DropdownKey, () => void> = {
   },
   closeAll() {
     clearTabs();
-  },
-  pin() {
-    fixTab(props.tabId);
-  },
-  unpin() {
-    unfixTab(props.tabId);
   }
 };
 
@@ -131,16 +118,32 @@ function handleDropdown(optionKey: App.Global.DropdownKey) {
 </script>
 
 <template>
-  <NDropdown
-    :show="visible"
-    placement="bottom-start"
-    trigger="manual"
-    :x="x"
-    :y="y"
-    :options="options"
-    @clickoutside="hideDropdown"
-    @select="handleDropdown"
-  />
+  <div class="absolute" :style="{ top: `${y - 60}px`, left: `${x + 60}px` }">
+    <ElDropdown ref="dropdown" popper-class="arrow-hide" trigger="click" @command="handleDropdown">
+      <!-- Avoid waning: [ElOnlyChild] no valid child node found -->
+      <span></span>
+      <template #dropdown>
+        <ElDropdownMenu>
+          <ElDropdownItem
+            v-for="{ key, label, icon, disabled } in options"
+            :key="key"
+            class="mx-4px my-1px rounded-6px"
+            :icon="icon"
+            :command="key"
+            :disabled="disabled"
+          >
+            {{ label }}
+          </ElDropdownItem>
+        </ElDropdownMenu>
+      </template>
+    </ElDropdown>
+  </div>
 </template>
 
-<style scoped></style>
+<style lang="scss">
+.arrow-hide {
+  .el-popper__arrow {
+    display: none;
+  }
+}
+</style>

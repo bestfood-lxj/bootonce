@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
-import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { useForm, useFormRules } from '@/hooks/common/form';
 import { useCaptcha } from '@/hooks/business/captcha';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'CodeLogin'
-});
+defineOptions({ name: 'CodeLogin' });
 
 const { toggleLoginModule } = useRouterPush();
-const { formRef, validate } = useNaiveForm();
+const { formRef, validate } = useForm();
 const { label, isCounting, loading, getCaptcha } = useCaptcha();
 
 interface FormModel {
@@ -18,18 +16,12 @@ interface FormModel {
   code: string;
 }
 
-const model: FormModel = reactive({
-  phone: '',
-  code: ''
-});
+const model = ref<FormModel>({ phone: '', code: '' });
 
 const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   const { formRules } = useFormRules();
 
-  return {
-    phone: formRules.phone,
-    code: formRules.code
-  };
+  return { phone: formRules.phone, code: formRules.code };
 });
 
 async function handleSubmit() {
@@ -40,27 +32,27 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <NForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
-    <NFormItem path="phone">
-      <NInput v-model:value="model.phone" :placeholder="$t('page.login.common.phonePlaceholder')" />
-    </NFormItem>
-    <NFormItem path="code">
+  <ElForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
+    <ElFormItem prop="phone">
+      <ElInput v-model="model.phone" :placeholder="$t('page.login.common.phonePlaceholder')" />
+    </ElFormItem>
+    <ElFormItem prop="code">
       <div class="w-full flex-y-center gap-16px">
-        <NInput v-model:value="model.code" :placeholder="$t('page.login.common.codePlaceholder')" />
-        <NButton size="large" :disabled="isCounting" :loading="loading" @click="getCaptcha(model.phone)">
+        <ElInput v-model="model.code" :placeholder="$t('page.login.common.codePlaceholder')" />
+        <ElButton size="large" :disabled="isCounting" :loading="loading" @click="getCaptcha(model.phone)">
           {{ label }}
-        </NButton>
+        </ElButton>
       </div>
-    </NFormItem>
-    <NSpace vertical :size="18" class="w-full">
-      <NButton type="primary" size="large" round block @click="handleSubmit">
+    </ElFormItem>
+    <ElSpace direction="vertical" :size="18" fill class="w-full">
+      <ElButton type="primary" size="large" round block @click="handleSubmit">
         {{ $t('common.confirm') }}
-      </NButton>
-      <NButton size="large" round block @click="toggleLoginModule('pwd-login')">
+      </ElButton>
+      <ElButton size="large" round block @click="toggleLoginModule('pwd-login')">
         {{ $t('page.login.common.back') }}
-      </NButton>
-    </NSpace>
-  </NForm>
+      </ElButton>
+    </ElSpace>
+  </ElForm>
 </template>
 
 <style scoped></style>

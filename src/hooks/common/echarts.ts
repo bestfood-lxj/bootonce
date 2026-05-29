@@ -1,4 +1,4 @@
-import { computed, effectScope, nextTick, onScopeDispose, shallowRef, watch } from 'vue';
+import { computed, effectScope, nextTick, onScopeDispose, ref, watch } from 'vue';
 import { useElementSize } from '@vueuse/core';
 import * as echarts from 'echarts/core';
 import { BarChart, GaugeChart, LineChart, PictorialBarChart, PieChart, RadarChart, ScatterChart } from 'echarts/charts';
@@ -86,11 +86,11 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
   const themeStore = useThemeStore();
   const darkMode = computed(() => themeStore.darkMode);
 
-  const domRef = shallowRef<HTMLElement | null>(null);
+  const domRef = ref<HTMLElement | null>(null);
   const initialSize = { width: 0, height: 0 };
   const { width, height } = useElementSize(domRef, initialSize);
 
-  const chart = shallowRef<echarts.ECharts | null>(null);
+  let chart: echarts.ECharts | null = null;
   const chartOptions: T = optionsFactory();
 
   const {
@@ -111,9 +111,18 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
     onDestroy
   } = hooks;
 
+  /**
+   * whether can render chart
+   *
+   * when domRef is ready and initialSize is valid
+   */
+  function canRender() {
+    return domRef.value && initialSize.width > 0 && initialSize.height > 0;
+  }
+
   /** is chart rendered */
   function isRendered() {
-    return Boolean(domRef.value && chart.value);
+    return Boolean(domRef.value && chart);
   }
 
   /**
@@ -122,59 +131,59 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
    * @param callback callback function
    */
   async function updateOptions(callback: (opts: T, optsFactory: () => T) => ECOption = () => chartOptions) {
+    if (!isRendered()) return;
+
     const updatedOpts = callback(chartOptions, optionsFactory);
 
     Object.assign(chartOptions, updatedOpts);
 
-    await nextTick();
-
-    if (!isRendered()) return;
-
     if (isRendered()) {
-      chart.value?.clear();
+      chart?.clear();
     }
 
-    chart.value?.setOption({ ...updatedOpts, backgroundColor: 'transparent' });
+    chart?.setOption({ ...updatedOpts, backgroundColor: 'transparent' });
 
-    await onUpdated?.(chart.value!);
+    await onUpdated?.(chart!);
   }
 
   function setOptions(options: T) {
-    chart.value?.setOption(options);
+    chart?.setOption(options);
   }
 
   /** render chart */
   async function render() {
-    if (isRendered()) return;
+    if (!isRendered()) {
+      const chartTheme = darkMode.value ? 'dark' : 'light';
 
-    const chartTheme = darkMode.value ? 'dark' : 'light';
+      await nextTick();
 
-    chart.value = echarts.init(domRef.value, chartTheme);
+      chart = echarts.init(domRef.value, chartTheme);
 
-    chart.value?.setOption({ ...chartOptions, backgroundColor: 'transparent' });
+      chart.setOption({ ...chartOptions, backgroundColor: 'transparent' });
 
-    await onRender?.(chart.value!);
+      await onRender?.(chart);
+    }
   }
 
   /** resize chart */
   function resize() {
-    chart.value?.resize();
+    chart?.resize();
   }
 
   /** destroy chart */
   async function destroy() {
-    if (!chart.value) return;
+    if (!chart) return;
 
-    await onDestroy?.(chart.value);
-    chart.value?.dispose();
-    chart.value = null;
+    await onDestroy?.(chart);
+    chart?.dispose();
+    chart = null;
   }
 
   /** change chart theme */
   async function changeTheme() {
     await destroy();
     await render();
-    await onUpdated?.(chart.value!);
+    await onUpdated?.(chart!);
   }
 
   /**
@@ -187,29 +196,30 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
     initialSize.width = w;
     initialSize.height = h;
 
+    // size is abnormal, destroy chart
+    if (!canRender()) {
+      await destroy();
+
+      return;
+    }
+
     // resize chart
     if (isRendered()) {
       resize();
-
-      return;
     }
 
     // render chart
     await render();
 
-    if (chart.value) {
-      await onUpdated?.(chart.value);
+    if (chart) {
+      await onUpdated?.(chart);
     }
   }
 
   scope.run(() => {
-    watch(
-      [width, height],
-      ([newWidth, newHeight]) => {
-        renderChartBySize(newWidth, newHeight);
-      },
-      { flush: 'post' }
-    );
+    watch([width, height], ([newWidth, newHeight]) => {
+      renderChartBySize(newWidth, newHeight);
+    });
 
     watch(darkMode, () => {
       changeTheme();
@@ -223,7 +233,6 @@ export function useEcharts<T extends ECOption>(optionsFactory: () => T, hooks: C
 
   return {
     domRef,
-    chart,
     updateOptions,
     setOptions
   };

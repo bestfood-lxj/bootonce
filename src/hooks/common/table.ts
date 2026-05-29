@@ -1,6 +1,6 @@
 import { computed, effectScope, onScopeDispose, reactive, shallowRef, watch } from 'vue';
 import type { Ref } from 'vue';
-import type { PaginationProps } from 'naive-ui';
+import type { PaginationEmits, PaginationProps } from 'element-plus';
 import { useBoolean, useTable } from '@sa/hooks';
 import type { PaginationData, TableColumnCheck, UseTableOptions } from '@sa/hooks';
 import type { FlatResponseData } from '@sa/axios';
@@ -8,8 +8,12 @@ import { jsonClone } from '@sa/utils';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
 
-export type UseNaiveTableOptions<ResponseData, ApiData, Pagination extends boolean> = Omit<
-  UseTableOptions<ResponseData, ApiData, NaiveUI.TableColumn<ApiData>, Pagination>,
+type RemoveReadonly<T> = {
+  -readonly [key in keyof T]: T[key];
+};
+
+export type UseUITableOptions<ResponseData, ApiData, Pagination extends boolean> = Omit<
+  UseTableOptions<ResponseData, ApiData, UI.TableColumn<ApiData>, Pagination>,
   'pagination' | 'getColumnChecks' | 'getColumns'
 > & {
   /**
@@ -21,18 +25,20 @@ export type UseNaiveTableOptions<ResponseData, ApiData, Pagination extends boole
    *
    * @returns true if the column is visible, false otherwise
    */
-  getColumnVisible?: (column: NaiveUI.TableColumn<ApiData>) => boolean;
+  getColumnVisible?: (column: UI.TableColumn<ApiData>) => boolean;
 };
 
 const SELECTION_KEY = '__selection__';
 
 const EXPAND_KEY = '__expand__';
 
-export function useNaiveTable<ResponseData, ApiData>(options: UseNaiveTableOptions<ResponseData, ApiData, false>) {
+const INDEX_KEY = '__index__';
+
+export function useUITable<ResponseData, ApiData>(options: UseUITableOptions<ResponseData, ApiData, false>) {
   const scope = effectScope();
   const appStore = useAppStore();
 
-  const result = useTable<ResponseData, ApiData, NaiveUI.TableColumn<ApiData>, false>({
+  const result = useTable<ResponseData, ApiData, UI.TableColumn<ApiData>, false>({
     ...options,
     getColumnChecks: cols => getColumnChecks(cols, options.getColumnVisible),
     getColumns
@@ -64,10 +70,10 @@ export function useNaiveTable<ResponseData, ApiData>(options: UseNaiveTableOptio
   };
 }
 
-type PaginationParams = Pick<PaginationProps, 'page' | 'pageSize'>;
+type PaginationParams = Pick<PaginationProps, 'currentPage' | 'pageSize'>;
 
-type UseNaivePaginatedTableOptions<ResponseData, ApiData> = UseNaiveTableOptions<ResponseData, ApiData, true> & {
-  paginationProps?: Omit<PaginationProps, 'page' | 'pageSize' | 'itemCount'>;
+type UseUIPaginatedTableOptions<ResponseData, ApiData> = UseUITableOptions<ResponseData, ApiData, true> & {
+  paginationProps?: Partial<Omit<PaginationProps, 'total'>>;
   /**
    * whether to show the total count of the table
    *
@@ -77,67 +83,63 @@ type UseNaivePaginatedTableOptions<ResponseData, ApiData> = UseNaiveTableOptions
   onPaginationParamsChange?: (params: PaginationParams) => void | Promise<void>;
 };
 
-export function useNaivePaginatedTable<ResponseData, ApiData>(
-  options: UseNaivePaginatedTableOptions<ResponseData, ApiData>
-) {
+export function useUIPaginatedTable<ResponseData, ApiData>(options: UseUIPaginatedTableOptions<ResponseData, ApiData>) {
   const scope = effectScope();
   const appStore = useAppStore();
 
   const isMobile = computed(() => appStore.isMobile);
 
-  const showTotal = computed(() => options.showTotal ?? true);
-
-  const pagination = reactive({
-    page: 1,
+  const pagination: Partial<RemoveReadonly<PaginationProps & PaginationEmits>> = reactive({
+    currentPage: 1,
     pageSize: 10,
-    itemCount: 0,
-    showSizePicker: true,
+    total: 0,
     pageSizes: [10, 15, 20, 25, 30],
-    prefix: showTotal.value ? page => $t('datatable.itemCount', { total: page.itemCount }) : undefined,
-    onUpdatePage(page) {
-      pagination.page = page;
+    'current-change': (page: number) => {
+      pagination.currentPage = page;
+
+      return true;
     },
-    onUpdatePageSize(pageSize) {
+    'size-change': (pageSize: number) => {
+      pagination.currentPage = 1;
       pagination.pageSize = pageSize;
-      pagination.page = 1;
+
+      return true;
     },
     ...options.paginationProps
   }) as PaginationProps;
 
   // this is for mobile, if the system does not support mobile, you can use `pagination` directly
   const mobilePagination = computed(() => {
-    const p: PaginationProps = {
+    const p: Partial<RemoveReadonly<PaginationProps & PaginationEmits>> = {
       ...pagination,
-      pageSlot: isMobile.value ? 3 : 9,
-      prefix: !isMobile.value && showTotal.value ? pagination.prefix : undefined
+      pagerCount: isMobile.value ? 3 : 9
     };
 
     return p;
   });
 
   const paginationParams = computed(() => {
-    const { page, pageSize } = pagination;
+    const { currentPage, pageSize } = pagination;
 
     return {
-      page,
+      currentPage,
       pageSize
     };
   });
 
-  const result = useTable<ResponseData, ApiData, NaiveUI.TableColumn<ApiData>, true>({
+  const result = useTable<ResponseData, ApiData, UI.TableColumn<ApiData>, true>({
     ...options,
     pagination: true,
     getColumnChecks: cols => getColumnChecks(cols, options.getColumnVisible),
     getColumns,
     onFetched: data => {
-      pagination.itemCount = data.total;
-      pagination.pageSize = data.pageSize;
+      pagination.total = data.total;
     }
   });
 
   async function getDataByPage(page: number = 1) {
-    if (page !== pagination.page) {
-      pagination.page = page;
+    if (page !== pagination.currentPage) {
+      pagination.currentPage = page;
 
       return;
     }
@@ -179,7 +181,7 @@ export function useTableOperate<TableData>(
 ) {
   const { bool: drawerVisible, setTrue: openDrawer, setFalse: closeDrawer } = useBoolean();
 
-  const operateType = shallowRef<NaiveUI.TableOperateType>('add');
+  const operateType = shallowRef<UI.TableOperateType>('add');
 
   function handleAdd() {
     operateType.value = 'add';
@@ -254,36 +256,40 @@ export function defaultTransform<ApiData>(
   };
 }
 
-function getColumnChecks<Column extends NaiveUI.TableColumn<any>>(
+function getColumnChecks<Column extends UI.TableColumn<any>>(
   cols: Column[],
   getColumnVisible?: (column: Column) => boolean
 ) {
   const checks: TableColumnCheck[] = [];
 
   cols.forEach(column => {
-    if (isTableColumnHasKey(column)) {
+    if (column.type === 'selection') {
       checks.push({
-        key: column.key as string,
-        title: column.title!,
+        prop: SELECTION_KEY,
+        label: $t('common.check'),
         checked: true,
-        fixed: column.fixed ?? 'unFixed',
-        visible: getColumnVisible?.(column) ?? true
-      });
-    } else if (column.type === 'selection') {
-      checks.push({
-        key: SELECTION_KEY,
-        title: $t('common.check'),
-        checked: true,
-        fixed: column.fixed ?? 'unFixed',
         visible: getColumnVisible?.(column) ?? false
       });
     } else if (column.type === 'expand') {
       checks.push({
-        key: EXPAND_KEY,
-        title: $t('common.expandColumn'),
+        prop: EXPAND_KEY,
+        label: $t('common.expandColumn'),
         checked: true,
-        fixed: column.fixed ?? 'unFixed',
         visible: getColumnVisible?.(column) ?? false
+      });
+    } else if (column.type === 'index') {
+      checks.push({
+        prop: INDEX_KEY,
+        label: $t('common.index'),
+        checked: true,
+        visible: getColumnVisible?.(column) ?? false
+      });
+    } else {
+      checks.push({
+        prop: column.prop as string,
+        label: column.label as string,
+        checked: true,
+        visible: getColumnVisible?.(column) ?? true
       });
     }
   });
@@ -291,31 +297,22 @@ function getColumnChecks<Column extends NaiveUI.TableColumn<any>>(
   return checks;
 }
 
-function getColumns<Column extends NaiveUI.TableColumn<any>>(cols: Column[], checks: TableColumnCheck[]) {
+function getColumns<Column extends UI.TableColumn<any>>(cols: Column[], checks: TableColumnCheck[]) {
   const columnMap = new Map<string, Column>();
 
   cols.forEach(column => {
-    if (isTableColumnHasKey(column)) {
-      columnMap.set(column.key as string, column);
-    } else if (column.type === 'selection') {
+    if (column.type === 'selection') {
       columnMap.set(SELECTION_KEY, column);
     } else if (column.type === 'expand') {
       columnMap.set(EXPAND_KEY, column);
+    } else if (column.type === 'index') {
+      columnMap.set(INDEX_KEY, column);
+    } else {
+      columnMap.set(column.prop as string, column);
     }
   });
 
-  const filteredColumns = checks
-    .filter(item => item.checked)
-    .map(check => {
-      return {
-        ...columnMap.get(check.key),
-        fixed: check.fixed
-      } as Column;
-    });
+  const filteredColumns = checks.filter(item => item.checked).map(check => columnMap.get(check.prop) as Column);
 
   return filteredColumns;
-}
-
-export function isTableColumnHasKey<T>(column: NaiveUI.TableColumn<T>): column is NaiveUI.TableColumnWithKey<T> {
-  return Boolean((column as NaiveUI.TableColumnWithKey<T>).key);
 }

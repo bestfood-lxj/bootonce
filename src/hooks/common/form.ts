@@ -1,6 +1,6 @@
 import { ref, toValue } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
-import type { FormInst } from 'naive-ui';
+import type { FormInstance } from 'element-plus';
 import { REG_CODE_SIX, REG_EMAIL, REG_PHONE, REG_PWD, REG_USER_NAME } from '@/constants/reg';
 import { $t } from '@/locales';
 
@@ -78,15 +78,15 @@ export function useFormRules() {
   };
 }
 
-export function useNaiveForm() {
-  const formRef = ref<FormInst | null>(null);
+export function useForm() {
+  const formRef = ref<FormInstance | null>(null);
 
   async function validate() {
     await formRef.value?.validate();
   }
 
   async function restoreValidation() {
-    formRef.value?.restoreValidation();
+    formRef.value?.resetFields();
   }
 
   return {

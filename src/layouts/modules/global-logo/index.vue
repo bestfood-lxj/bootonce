@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'GlobalLogo'
-});
+defineOptions({ name: 'GlobalLogo' });
 
 interface Props {
   /** Whether to show the title */

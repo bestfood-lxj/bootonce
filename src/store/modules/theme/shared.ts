@@ -1,4 +1,3 @@
-import type { GlobalThemeOverrides } from 'naive-ui';
 import { defu } from 'defu';
 import { addColorAlpha, getColorPalette, getPaletteColorByNumber, getRgb } from '@sa/color';
 import { DARK_CLASS } from '@/constants/app';
@@ -9,7 +8,7 @@ import { themeVars } from '@/theme/vars';
 
 /** Init theme settings */
 export function initThemeSettings() {
-  const isProd = import.meta.env.PROD;
+  const isProd = import.meta.env.MODE === 'prod';
 
   // if it is development mode, the theme settings will not be cached, by update `themeSettings` in `src/theme/settings.ts` to update theme settings
   if (!isProd) return themeSettings;
@@ -25,7 +24,6 @@ export function initThemeSettings() {
 
   if (!isOverride) {
     settings = defu(overrideThemeSettings, settings);
-
     localStg.set('overrideThemeFlag', BUILD_TIME);
   }
 
@@ -144,17 +142,9 @@ export function addThemeVarsToGlobal(tokens: App.Theme.BaseToken, darkTokens: Ap
   const cssVarStr = getCssVarByTokens(tokens);
   const darkCssVarStr = getCssVarByTokens(darkTokens);
 
-  const css = `
-    :root {
-      ${cssVarStr}
-    }
-  `;
+  const css = `:root { ${cssVarStr} }`;
 
-  const darkCss = `
-    html.${DARK_CLASS} {
-      ${darkCssVarStr}
-    }
-  `;
+  const darkCss = `html.${DARK_CLASS} { ${darkCssVarStr} }`;
 
   const styleId = 'theme-vars';
 
@@ -237,30 +227,23 @@ function getNaiveThemeColors(colors: App.Theme.ThemeColor, recommended = false) 
  * Get naive theme
  *
  * @param colors Theme colors
- * @param settings Theme settings object
- * @param overrides Optional manual overrides from preset
+ * @param [recommended=false] Use recommended color. Default is `false`
  */
-export function getNaiveTheme(
-  colors: App.Theme.ThemeColor,
-  settings: App.Theme.ThemeSetting,
-  overrides?: GlobalThemeOverrides
-) {
+export function getNaiveTheme(colors: App.Theme.ThemeColor, recommended = false) {
   const { primary: colorLoading } = colors;
 
-  const theme: GlobalThemeOverrides = {
+  const theme = {
     common: {
-      ...getNaiveThemeColors(colors, settings.recommendColor),
-      borderRadius: `${settings.themeRadius}px`
+      ...getNaiveThemeColors(colors, recommended),
+      borderRadius: '6px'
     },
     LoadingBar: {
       colorLoading
     },
     Tag: {
-      borderRadius: `${settings.themeRadius}px`
+      borderRadius: '6px'
     }
   };
 
-  // If there are overrides, merge them with priority
-  // overrides has higher priority than auto-generated theme
-  return overrides ? defu(overrides, theme) : theme;
+  return theme;
 }

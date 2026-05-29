@@ -4,9 +4,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useEcharts } from '@/hooks/common/echarts';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'PieChart'
-});
+defineOptions({ name: 'PieChart' });
 
 const appStore = useAppStore();
 
@@ -101,9 +99,9 @@ init();
 </script>
 
 <template>
-  <NCard :bordered="false" class="card-wrapper">
+  <ElCard class="card-wrapper">
     <div ref="domRef" class="h-360px overflow-hidden"></div>
-  </NCard>
+  </ElCard>
 </template>
 
 <style scoped></style>

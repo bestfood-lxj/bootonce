@@ -1,7 +1,5 @@
 <script setup lang="ts">
-defineOptions({
-  name: 'SettingItem'
-});
+defineOptions({ name: 'SettingItem' });
 
 interface Props {
   /** Label */
@@ -13,7 +11,7 @@ defineProps<Props>();
 
 <template>
   <div class="w-full flex-y-center justify-between">
-    <div class="flex-y-center">
+    <div>
       <span class="pr-8px text-base-text">{{ label }}</span>
       <slot name="suffix"></slot>
     </div>

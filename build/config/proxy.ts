@@ -37,7 +37,9 @@ function createProxyItem(item: App.Service.ServiceConfigItem, enableLog: boolean
       _proxy.on('proxyReq', (_proxyReq, req, _res) => {
         if (!enableLog) return;
 
-        const requestUrl = `${lightBlue('[proxy url]')}: ${bgYellow(` ${req.method} `)} ${green(`${item.proxyPattern}${req.url}`)}`;
+        const requestUrl = `${lightBlue('[proxy url]')}: ${bgYellow(` ${req.method} `)} ${green(
+          `${item.proxyPattern}${req.url}`
+        )}`;
 
         const proxyUrl = `${lightBlue('[real request url]')}: ${green(`${options.target}${req.url}`)}`;
 

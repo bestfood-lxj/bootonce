@@ -5,9 +5,7 @@ import { useThemeStore } from '@/store/modules/theme';
 import { useRouteStore } from '@/store/modules/route';
 import { useRouterPush } from '@/hooks/common/router';
 
-defineOptions({
-  name: 'GlobalBreadcrumb'
-});
+defineOptions({ name: 'GlobalBreadcrumb' });
 
 const themeStore = useThemeStore();
 const routeStore = useRouteStore();
@@ -25,7 +23,7 @@ function handleClickMenu(key: RouteKey) {
 </script>
 
 <template>
-  <NBreadcrumb v-if="themeStore.header.breadcrumb.visible">
+  <ElBreadcrumb v-if="themeStore.header.breadcrumb.visible">
     <!-- define component start: BreadcrumbContent -->
     <DefineBreadcrumbContent v-slot="{ breadcrumb }">
       <div class="i-flex-y-center align-middle">
@@ -33,15 +31,22 @@ function handleClickMenu(key: RouteKey) {
         {{ breadcrumb.label }}
       </div>
     </DefineBreadcrumbContent>
-    <!-- define component end: BreadcrumbContent -->
 
-    <NBreadcrumbItem v-for="item in routeStore.breadcrumbs" :key="item.key">
-      <NDropdown v-if="item.options?.length" :options="item.options" @select="handleClickMenu">
+    <!-- define component end: BreadcrumbContent -->
+    <ElBreadcrumbItem v-for="item in routeStore.breadcrumbs" :key="item.key">
+      <ElDropdown v-if="item.options?.length" @command="handleClickMenu">
         <BreadcrumbContent :breadcrumb="item" />
-      </NDropdown>
+        <template #dropdown>
+          <ElDropdownMenu>
+            <ElDropdownItem v-for="option in item.options" :key="option.key" :command="option.key">
+              {{ option.label }}
+            </ElDropdownItem>
+          </ElDropdownMenu>
+        </template>
+      </ElDropdown>
       <BreadcrumbContent v-else :breadcrumb="item" />
-    </NBreadcrumbItem>
-  </NBreadcrumb>
+    </ElBreadcrumbItem>
+  </ElBreadcrumb>
 </template>
 
 <style scoped></style>

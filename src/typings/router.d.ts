@@ -23,13 +23,13 @@ declare module 'vue-router' {
      */
     roles?: string[];
     /** Whether to cache the route */
-    keepAlive?: boolean | null;
+    keepAlive?: boolean | undefined;
     /**
      * Is constant route
      *
      * when it is set to true, there will be no login verification and no permission verification to access the route
      */
-    constant?: boolean | null;
+    constant?: boolean | undefined;
     /**
      * Iconify icon
      *
@@ -45,11 +45,11 @@ declare module 'vue-router' {
     /** Icon size. width and height are the same. */
     iconFontSize?: number;
     /** Router order */
-    order?: number | null;
+    order?: number | undefined;
     /** The outer link of the route */
     href?: string | null;
     /** Whether to hide the route in the menu */
-    hideInMenu?: boolean | null;
+    hideInMenu?: boolean | undefined;
     /**
      * The menu key will be activated when entering the route
      *
@@ -58,14 +58,14 @@ declare module 'vue-router' {
      * @example
      *   the route is "user_detail", if it is set to "user_list", the menu "user_list" will be activated
      */
-    activeMenu?: import('@elegant-router/types').RouteKey | null;
+    activeMenu?: import('@elegant-router/types').RouteKey | undefined;
     /**
      * By default, the same route path will use one tab, even with different query, if set true, the route with
      * different query will use different tabs
      */
-    multiTab?: boolean | null;
+    multiTab?: boolean | undefined;
     /** If set, the route will be fixed in tabs, and the value is the order of fixed tabs */
-    fixedIndexInTab?: number | null;
+    fixedIndexInTab?: number | undefined;
     /** if set query parameters, it will be automatically carried when entering the route */
     query?: { key: string; value: string }[] | null;
   }

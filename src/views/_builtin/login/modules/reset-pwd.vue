@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouterPush } from '@/hooks/common/router';
-import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { useForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'ResetPwd'
-});
+defineOptions({ name: 'ResetPwd' });
 
 const { toggleLoginModule } = useRouterPush();
-const { formRef, validate } = useNaiveForm();
+const { formRef, validate } = useForm();
 
 interface FormModel {
   phone: string;
@@ -18,7 +16,7 @@ interface FormModel {
   confirmPassword: string;
 }
 
-const model: FormModel = reactive({
+const model = ref<FormModel>({
   phone: '',
   code: '',
   password: '',
@@ -33,7 +31,7 @@ const rules = computed<RuleRecord>(() => {
   return {
     phone: formRules.phone,
     password: formRules.pwd,
-    confirmPassword: createConfirmPwdRule(model.password)
+    confirmPassword: createConfirmPwdRule(model.value.password)
   };
 });
 
@@ -45,38 +43,38 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <NForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
-    <NFormItem path="phone">
-      <NInput v-model:value="model.phone" :placeholder="$t('page.login.common.phonePlaceholder')" />
-    </NFormItem>
-    <NFormItem path="code">
-      <NInput v-model:value="model.code" :placeholder="$t('page.login.common.codePlaceholder')" />
-    </NFormItem>
-    <NFormItem path="password">
-      <NInput
-        v-model:value="model.password"
+  <ElForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
+    <ElFormItem prop="phone">
+      <ElInput v-model="model.phone" :placeholder="$t('page.login.common.phonePlaceholder')" />
+    </ElFormItem>
+    <ElFormItem prop="code">
+      <ElInput v-model="model.code" :placeholder="$t('page.login.common.codePlaceholder')" />
+    </ElFormItem>
+    <ElFormItem prop="password">
+      <ElInput
+        v-model="model.password"
         type="password"
         show-password-on="click"
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
-    </NFormItem>
-    <NFormItem path="confirmPassword">
-      <NInput
-        v-model:value="model.confirmPassword"
+    </ElFormItem>
+    <ElFormItem prop="confirmPassword">
+      <ElInput
+        v-model="model.confirmPassword"
         type="password"
         show-password-on="click"
         :placeholder="$t('page.login.common.confirmPasswordPlaceholder')"
       />
-    </NFormItem>
-    <NSpace vertical :size="18" class="w-full">
-      <NButton type="primary" size="large" round block @click="handleSubmit">
+    </ElFormItem>
+    <ElSpace direction="vertical" fill :size="18" class="w-full">
+      <ElButton type="primary" size="large" round @click="handleSubmit">
         {{ $t('common.confirm') }}
-      </NButton>
-      <NButton size="large" round block @click="toggleLoginModule('pwd-login')">
+      </ElButton>
+      <ElButton size="large" round @click="toggleLoginModule('pwd-login')">
         {{ $t('page.login.common.back') }}
-      </NButton>
-    </NSpace>
-  </NForm>
+      </ElButton>
+    </ElSpace>
+  </ElForm>
 </template>
 
 <style scoped></style>

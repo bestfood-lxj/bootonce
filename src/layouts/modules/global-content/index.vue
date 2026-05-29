@@ -6,9 +6,7 @@ import { useThemeStore } from '@/store/modules/theme';
 import { useRouteStore } from '@/store/modules/route';
 import { useTabStore } from '@/store/modules/tab';
 
-defineOptions({
-  name: 'GlobalContent'
-});
+defineOptions({ name: 'GlobalContent' });
 
 interface Props {
   /** Show padding for content */

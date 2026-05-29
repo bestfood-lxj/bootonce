@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
-import { useThemeStore } from '@/store/modules/theme';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'CardData'
-});
+defineOptions({ name: 'CardData' });
 
 interface CardData {
   key: string;
@@ -73,28 +70,22 @@ interface GradientBgProps {
 
 const [DefineGradientBg, GradientBg] = createReusableTemplate<GradientBgProps>();
 
-const themeStore = useThemeStore();
-
 function getGradientColor(color: CardData['color']) {
   return `linear-gradient(to bottom right, ${color.start}, ${color.end})`;
 }
 </script>
 
 <template>
-  <NCard :bordered="false" size="small" class="card-wrapper">
+  <ElCard class="card-wrapper">
     <!-- define component start: GradientBg -->
     <DefineGradientBg v-slot="{ $slots, gradientColor }">
-      <div
-        class="px-16px pb-4px pt-8px text-white"
-        :style="{ backgroundImage: gradientColor, borderRadius: themeStore.themeRadius + 'px' }"
-      >
+      <div class="rd-8px px-16px pb-4px pt-8px text-white" :style="{ backgroundImage: gradientColor }">
         <component :is="$slots.default" />
       </div>
     </DefineGradientBg>
     <!-- define component end: GradientBg -->
-
-    <NGrid cols="s:1 m:2 l:4" responsive="screen" :x-gap="16" :y-gap="16">
-      <NGi v-for="item in cardData" :key="item.key">
+    <ElRow :gutter="16">
+      <ElCol v-for="item in cardData" :key="item.key" :lg="6" :md="12" :sm="24" class="my-8px">
         <GradientBg :gradient-color="getGradientColor(item.color)" class="flex-1">
           <h3 class="text-16px">{{ item.title }}</h3>
           <div class="flex justify-between pt-12px">
@@ -107,9 +98,9 @@ function getGradientColor(color: CardData['color']) {
             />
           </div>
         </GradientBg>
-      </NGi>
-    </NGrid>
-  </NCard>
+      </ElCol>
+    </ElRow>
+  </ElCard>
 </template>
 
 <style scoped></style>

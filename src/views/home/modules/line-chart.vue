@@ -4,9 +4,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useEcharts } from '@/hooks/common/echarts';
 import { $t } from '@/locales';
 
-defineOptions({
-  name: 'LineChart'
-});
+defineOptions({ name: 'LineChart' });
 
 const appStore = useAppStore();
 
@@ -21,14 +19,13 @@ const { domRef, updateOptions } = useEcharts(() => ({
     }
   },
   legend: {
-    data: [$t('page.home.downloadCount'), $t('page.home.registerCount')],
-    top: '0'
+    data: [$t('page.home.downloadCount'), $t('page.home.registerCount')]
   },
   grid: {
     left: '3%',
     right: '4%',
     bottom: '3%',
-    top: '15%'
+    containLabel: true
   },
   xAxis: {
     type: 'category',
@@ -144,9 +141,9 @@ init();
 </script>
 
 <template>
-  <NCard :bordered="false" class="card-wrapper">
+  <ElCard class="card-wrapper">
     <div ref="domRef" class="h-360px overflow-hidden"></div>
-  </NCard>
+  </ElCard>
 </template>
 
 <style scoped></style>

@@ -7,6 +7,12 @@ interface AdminLayoutHeaderConfig {
    */
   headerVisible?: boolean;
   /**
+   * Header class
+   *
+   * @default ''
+   */
+  headerClass?: string;
+  /**
    * Header height
    *
    * @default 56px
@@ -240,7 +246,7 @@ export type LayoutCssVars = {
  *
  * @default chrome
  */
-export type PageTabMode = 'button' | 'chrome' | 'slider';
+export type PageTabMode = 'button' | 'chrome';
 
 export interface PageTabProps {
   /** Whether is dark mode */
@@ -263,8 +269,6 @@ export interface PageTabProps {
   buttonClass?: string;
   /** The class of the chrome tab */
   chromeClass?: string;
-  /** The class of the title tab */
-  sliderClass?: string;
   /** Whether the tab is active */
   active?: boolean;
   /** The color of the active tab */

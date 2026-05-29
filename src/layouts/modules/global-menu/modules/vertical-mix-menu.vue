@@ -10,9 +10,10 @@ import { useThemeStore } from '@/store/modules/theme';
 import { useRouteStore } from '@/store/modules/route';
 import { useRouterPush } from '@/hooks/common/router';
 import { $t } from '@/locales';
-import { useMenu, useMixMenuContext } from '../context';
+import { useMenu, useMixMenuContext } from '../../../context';
 import FirstLevelMenu from '../components/first-level-menu.vue';
 import GlobalLogo from '../../global-logo/index.vue';
+import MenuItem from '../components/menu-item.vue';
 
 defineOptions({
   name: 'VerticalMixMenu'
@@ -25,26 +26,28 @@ const routeStore = useRouteStore();
 const { routerPushByKeyWithMetaQuery } = useRouterPush();
 const { bool: drawerVisible, setBool: setDrawerVisible } = useBoolean();
 const {
-  firstLevelMenus,
-  secondLevelMenus,
+  allMenus,
+  childLevelMenus,
   activeFirstLevelMenuKey,
-  isActiveFirstLevelMenuHasChildren,
-  getActiveFirstLevelMenuKey,
-  handleSelectFirstLevelMenu
-} = useMixMenuContext('VerticalMixMenu');
-const { selectedKey } = useMenu();
+  setActiveFirstLevelMenuKey,
+  getActiveFirstLevelMenuKey
+  //
+} = useMixMenuContext();
+const { selectedKey, selectedKeyDummy, handleSelect } = useMenu();
 
 const inverted = computed(() => !themeStore.darkMode && themeStore.sider.inverted);
 
-const hasChildMenus = computed(() => secondLevelMenus.value.length > 0);
+const hasChildMenus = computed(() => childLevelMenus.value.length > 0);
 
 const showDrawer = computed(() => hasChildMenus.value && (drawerVisible.value || appStore.mixSiderFixed));
 
-function handleSelectMenu(key: RouteKey) {
-  handleSelectFirstLevelMenu(key);
+function handleSelectMixMenu(menu: App.Global.Menu) {
+  setActiveFirstLevelMenuKey(menu.key);
 
-  if (isActiveFirstLevelMenuHasChildren.value) {
+  if (menu.children?.length) {
     setDrawerVisible(true);
+  } else {
+    routerPushByKeyWithMetaQuery(menu.routeKey);
   }
 }
 
@@ -79,13 +82,13 @@ watch(
   <Teleport :to="`#${GLOBAL_SIDER_MENU_ID}`">
     <div class="h-full flex" @mouseleave="handleResetActiveMenu">
       <FirstLevelMenu
-        :menus="firstLevelMenus"
+        :menus="allMenus"
         :active-menu-key="activeFirstLevelMenuKey"
         :inverted="inverted"
         :sider-collapse="appStore.siderCollapse"
         :dark-mode="themeStore.darkMode"
         :theme-color="themeStore.themeColor"
-        @select="handleSelectMenu"
+        @select="handleSelectMixMenu"
         @toggle-sider-collapse="appStore.toggleSiderCollapse"
       >
         <GlobalLogo :show-title="false" :style="{ height: themeStore.header.height + 'px' }" />
@@ -108,15 +111,9 @@ watch(
             />
           </header>
           <SimpleScrollbar>
-            <NMenu
-              v-model:expanded-keys="expandedKeys"
-              mode="vertical"
-              :value="selectedKey"
-              :options="secondLevelMenus"
-              :inverted="inverted"
-              :indent="18"
-              @update:value="routerPushByKeyWithMetaQuery"
-            />
+            <ElMenu mode="vertical" :default-active="selectedKeyDummy" @select="val => handleSelect(val as RouteKey)">
+              <MenuItem v-for="item in childLevelMenus" :key="item.key" :item="item" :index="item.key" />
+            </ElMenu>
           </SimpleScrollbar>
         </DarkModeContainer>
       </div>

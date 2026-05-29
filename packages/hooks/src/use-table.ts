@@ -19,11 +19,10 @@ type Transform<ResponseData, ApiData, Pagination extends boolean> = (
 export type TableColumnCheckTitle = string | ((...args: any) => VNodeChild);
 
 export type TableColumnCheck = {
-  key: string;
-  title: TableColumnCheckTitle;
+  prop: string;
+  label: TableColumnCheckTitle;
   checked: boolean;
   visible: boolean;
-  fixed: 'left' | 'right' | 'unFixed';
 };
 
 export interface UseTableOptions<ResponseData, ApiData, Column, Pagination extends boolean> {
@@ -78,15 +77,13 @@ export default function useTable<ResponseData, ApiData, Column, Pagination exten
   const $columns = computed(() => getColumns(columns(), columnChecks.value));
 
   function reloadColumns() {
-    const checkMap = new Map(columnChecks.value.map(col => [col.key, col.checked]));
-    const fixedMap = new Map(columnChecks.value.map(col => [col.key, col.fixed]));
+    const checkMap = new Map(columnChecks.value.map(col => [col.prop, col.checked]));
 
     const defaultChecks = getColumnChecks(columns());
 
     columnChecks.value = defaultChecks.map(col => ({
       ...col,
-      checked: checkMap.get(col.key) ?? col.checked,
-      fixed: (fixedMap.get(col.key) !== 'unFixed' ? fixedMap.get(col.key) : undefined) ?? col.fixed
+      checked: checkMap.get(col.prop) ?? col.checked
     }));
   }
 
