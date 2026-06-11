@@ -3,7 +3,6 @@ import { createPinia } from "pinia";
 import VueVirtualScroller from "vue-virtual-scroller";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import "./styles/globals.css";
-import { installDebugLogCapture } from "@/lib/debugLog";
 
 function startupErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -59,7 +58,5 @@ async function bootstrap() {
   app.mount("#root");
   console.log("[STARTUP] vue mounted");
 }
-
-installDebugLogCapture();
 installStartupErrorHandlers();
 void bootstrap().catch(renderStartupError);
