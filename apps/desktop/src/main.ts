@@ -46,14 +46,13 @@ function installStartupErrorHandlers() {
 
 async function bootstrap() {
   console.log("[STARTUP] frontend bootstrap begin");
-  const [{ default: i18n, loadSavedLocale }, { default: App }] = await Promise.all([import("./App.vue")]);
+  const [{ default: App }] = await Promise.all([import("./App.vue")]);
   console.log("[STARTUP] frontend modules loaded");
-  await loadSavedLocale();
+
   console.log("[STARTUP] locale ready");
 
   const app = createApp(App);
   app.use(createPinia());
-  app.use(i18n);
   app.use(VueVirtualScroller);
   app.mount("#root");
   console.log("[STARTUP] vue mounted");
