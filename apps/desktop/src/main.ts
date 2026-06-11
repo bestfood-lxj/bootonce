@@ -47,7 +47,7 @@ function installStartupErrorHandlers() {
 
 async function bootstrap() {
   console.log("[STARTUP] frontend bootstrap begin");
-  const [{ default: i18n, loadSavedLocale }, { default: App }] = await Promise.all([import("./i18n"), import("./App.vue")]);
+  const [{ default: i18n, loadSavedLocale }, { default: App }] = await Promise.all([import("./App.vue")]);
   console.log("[STARTUP] frontend modules loaded");
   await loadSavedLocale();
   console.log("[STARTUP] locale ready");
