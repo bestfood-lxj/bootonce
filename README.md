@@ -1,128 +1,128 @@
+# Animated
+
+Declarative Animations Library for React and React Native
+
+See the [interactive docs](http://animatedjs.github.io/interactive-docs/).
+
+
+## Goal
+
+The goal of this repo is to provide an implementation of the Animated library
+that is currently provided by React Native that can also be used by React in
+a web context. At some point, React Native will itself depend on this library.
+
+Additionally, it would be ideal if this library would be compatible with future
+potential "targets" of React where animation makes sense.
+
+
+## Usage (Still Theoretical)
+
+Right now the main export of this library is essentially just what is in the
+`Animated` namespace in React Native, minus the `View`, `Image`, and `Text`
+namespace. Additionally, it includes an `inject` namespace (explained below).
+
+Ideally, I'd like to make it so that `View`, `Image`, and `Text` are exported,
+and just do the "right thing" depending on whether or not they are being used
+in the context of React Native or React Web.  I'm not quite sure how we can do
+this yet without declaring dependencies on react native. Perhaps the platform
+specific file extensions can be used for this?
+
+
+### Injectables
+
+There are several parts of this library that need to have slightly different
+implementations for react-dom than for react-native. At the moment, I've just
+made these things "injectable" so that this library can stay dependent on only
+react.
+
+Some of these I am implementing as "injectable", even though right now it would
+technically work for both platforms. This doesn't hurt anything, and attempts to
+make this library more compatible with future "targets" for react.
+
+The injectable modules are available off of the `Animated.inject` namespace,
+and include:
+
+- `ApplyAnimatedValues`
+- `FlattenStyle`
+- `InteractionManager`
+- `RequestAnimationFrame`
+- `CancelAnimationFrame`
+
+Each of these modules can be injected by passing in the implementation. For
+example, a naive `FlattenStyle` could be passed in as:
+
 ```js
-/**
-* 感谢各位对本仓库的star和关注，以及提出的宝贵意见，万分抱歉没有及时跟进issue list，
-* 本仓库最近着手使用ts进行重写，但会保持向下兼容，修复之前出现的问题，增加移动端适配等特性
-*/
+Animated.inject.FlattenStyle(
+  styles => Array.isArray(styles)
+    ? Object.assign.apply(null, styles)
+    : styles
+);
 ```
 
-[中文](https://github.com/leejaen/react-lz-editor/blob/master/README.cn.md)
-[![npm license](https://img.shields.io/npm/l/awesome-badges.svg)](https://www.npmjs.org/package/awesome-badges)
+## Sample Code
+Below are simple examples for using animated in React.
 
-# react-lz-editor
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import Animated from "animated/lib/targets/react-dom";
 
-An open source react rich-text editor ( mordern react editor includes media support such as texts, images, videos, audios, links etc. ), development based on Draft-Js and Ant-design, good support html, markdown, draft-raw mode. It's supports multiple languages well and welcome you add your language supports.
+class App extends React.Component {
+  state = { anim: new Animated.Value(0) };
+  click = () => {
+    Animated.timing(this.state.anim, { 
+      toValue: 100, 
+      duration: 500 
+    }).start();
+  };
 
-## Language Contributors
-
-[![Li Zhen](https://avatars3.githubusercontent.com/u/1638970?s=50&v=4)](https://github.com/leejaen) | [![Li Zhen](https://avatars3.githubusercontent.com/u/1638970?s=50&v=4)](https://github.com/leejaen) | [![Boris Chernysh](https://avatars1.githubusercontent.com/u/16339593?s=50&v=4)](https://github.com/borisblack) | [![SibaService.inc](https://avatars1.githubusercontent.com/u/1687663?s=50&v=4)](https://github.com/sibaservice) | [![Quốc Khánh](https://avatars1.githubusercontent.com/u/16166195?s=50&v=4)](https://github.com/bkdev98) | [![This JJ](https://avatars3.githubusercontent.com/u/32838161?s=50&v=4)](https://github.com/thisJJ)
----|---|---|---|---|---
-[Li Zhen](https://github.com/leejaen) | [Li Zhen](https://github.com/leejaen) | [Boris Chernysh](https://github.com/borisblack) | [SibaService.inc](https://github.com/sibaservice) | [Quốc Khánh](https://github.com/bkdev98) | [This JJ](https://github.com/thisJJ)
-English | Chinese (S. & T.) | Russian | Japanese | Vietnamese | Thai
-
-## Live demo
-
-[react-lz-editor:](https://leejaen.github.io/react-lz-editor/index.html) https://leejaen.github.io/react-lz-editor/index.html
-
-Disabled media insert feature on demo page, because of there was no online API support for the time being, here is [The server side API demo in java](https://github.com/leejaen/react-lz-editor/blob/master/java_demo/getQiniuUptoken.java) you may want.
-
-# Install
-```
-npm install react-lz-editor --save
-OR
-yarn add react-lz-editor
-```
-
-Version note: React 15.4.2+ and react-dom 15.4.2+ is required. Antd version at least from 2.8.3 in your project is recommended.
-
-# Git
-    git+ssh://git@github.com/leejaen/react-lz-editor.git
-
-# Usage & Examples
-
-  [clicking to code example](https://github.com/leejaen/react-lz-editor/blob/master/src/test.jsx)
-
-  ``` js
-  import React from 'react';
-  import ReactDOM from 'react-dom';
-  import LzEditor from './editor/index.jsx'
-  class Test extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        htmlContent: `<h1>Yankees, Peeking at the Red Sox, Will Soon Get an Eyeful</h1>
-                  <p>Whenever Girardi stole a glance, there was rarely any good news for the Yankees. While Girardi’s charges were clawing their way to a split of their four-game series against the formidable Indians, the Boston Red Sox were plowing past the rebuilding Chicago White Sox, sweeping four games at Fenway Park.</p>`,
-        markdownContent: "## HEAD 2 \n markdown examples \n ``` welcome ```",
-        responseList: []
-      }
-      this.receiveHtml=this.receiveHtml.bind(this);
-    }
-    receiveHtml(content) {
-      console.log("recieved HTML content", content);
-      this.setState({responseList:[]});
-    }
-    render() {
-      let policy = "";
-      const uploadProps = {
-        action: "http://v0.api.upyun.com/devopee",
-        onChange: this.onChange,
-        listType: 'picture',
-        fileList: this.state.responseList,
-        data: (file) => {
-
-        },
-        multiple: true,
-        beforeUpload: this.beforeUpload,
-        showUploadList: true
-      }
-      return (
-        <div>
-          <div>Editor demo 1 (use default html format ):
-          </div>
-          <LzEditor active={true} importContent={this.state.htmlContent} cbReceiver={this.receiveHtml} uploadProps={uploadProps}
-          lang="en"/>
-          <br/>
-          <div>Editor demo 2 (use markdown format ):
-          </div>
-          <LzEditor
-            active={true}
-            importContent={this.state.markdownContent}
-            cbReceiver={this.receiveMarkdown}
-            image={false}
-            video={false}
-            audio={false}
-            convertFormat="markdown"/>
-        </div>
-      );
-    }
+  render() {
+    return (
+      <div className="App">
+        <Animated.div
+          className="box"
+          style={{ left: this.state.anim }}
+          onClick={this.click}
+        />
+      </div>
+    );
   }
+}
 
-  ReactDOM.render(
-    <Test/>, document.getElementById('test'));
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
 
-  ```
+```
+The above code will move the `div` element with the class of `box` by `100px` when clicked.
 
-![screenshot](https://image.qiluyidian.mobi/54541628992197066868.png)
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import Animated from "animated/lib/targets/react-dom";
 
-# API
-| props | type | default | description |
-| -- | -- | -- | -- |
-| active | bool | false | Is reloading content after changing |
-| importContent | string | "" | Editor content value, default to "" |
-| lang | string | "" | Editor using language, default to your browser language settings |
-| cbReceiver | function | null | `Callback` function, the changed value will be sent to its parameter. |
-| undoRedo | bool | true | Enabled `undo and redo` feature, default to true |
-| removeStyle | bool | true | Enabled `remove style` feature, default to true |
-| pasteNoStyle | bool | true | Enabled `paste plan text` feature, default to true |
-| blockStyle | bool | true | Enabled `block style (H1,ol,pre etc.)` feature, default to true |
-| alignment | bool | true | Enabled `text alignment` feature, default to true |
-| inlineStyle | bool | true | Enabled `inline style (bold, italic, underline etc.)` feature, default to true |
-| color | bool | true | Enabled `color text` feature, default to true |
-| image | bool | true | Enabled `insert image` feature, default to true |
-| video | bool | true | Enabled `insert video` feature, default to true |
-| audio | bool | true | Enabled `insert audio` feature, default to true |
-| urls | bool | true | Enabled `add hyper link` feature, default to true |
-| autoSave | bool | true | Enabled `auto save to draft-box` feature, default to true |
-| fullScreen | bool | true | Enabled `full screen` feature, default to true |
-| convertFormat | string | "html" | Set support format `(html, markdown, raw)`, default to "html" |
-| disabled | bool | false | Disabled editor or not |
-| uploadProps | object | null | Customize uploading settings. [API: Antd.Upload](https://ant.design/components/upload/) |
+class App extends React.Component {
+  state = { anim: new Animated.Value(1) };
+  handleMouseDown = () =>
+    Animated.timing(this.state.anim, { toValue: 0.5 }).start();
+  handleMouseUp = () =>
+    Animated.timing(this.state.anim, { toValue: 1 }).start();
+
+  render() {
+    return (
+      <div className="App">
+        <Animated.div
+          className="box"
+          style={{ transform: [{ scale: this.state.anim }] }}
+          onMouseDown={this.handleMouseDown}
+          onMouseUp={this.handleMouseUp}
+        />
+      </div>
+    );
+  }
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+```
+The above code will scale the `div` element with the class of `box` by in and then out when pressed.
