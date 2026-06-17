@@ -2,9 +2,38 @@ import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 import { useState } from 'react';
 import ReactiveButton from 'reactive-button';
-import { Sparklines } from 'react-sparklines';
+import {  Sparklines, SparklinesBars, SparklinesLine, SparklinesCurve,  SparklinesNormalBand, SparklinesReferenceLine, SparklinesSpots } from 'react-sparklines';
 
 export function Welcome() {
+
+function boxMullerRandom () {
+    let phase = false,
+        x1, x2, w, z;
+
+    return (function() {
+
+        if (phase = !phase) {
+            do {
+                x1 = 2.0 * Math.random() - 1.0;
+                x2 = 2.0 * Math.random() - 1.0;
+                w = x1 * x1 + x2 * x2;
+            } while (w >= 1.0);
+
+            w = Math.sqrt((-2.0 * Math.log(w)) / w);
+            return x1 * w;
+        } else {
+            return x2 * w;
+        }
+    })();
+}
+
+function randomData(n = 30) {
+    return Array.apply(0, Array(n)).map(boxMullerRandom);
+}
+
+const sampleData = randomData(30);
+
+  
   const [state, setState] = useState('idle');
 
   const onClickHandler = () => {
@@ -30,7 +59,9 @@ export function Welcome() {
               />
           </div>
           <div className="w-[500px] max-w-[100vw] p-4">
-            <Sparklines data={[5, 10, 5, 20, 8, 15]} limit={5} width={100} height={20} margin={5}></Sparklines>
+            <Sparklines data={sampleData}>
+              <SparklinesLine />
+            </Sparklines>
           </div>
         </header>
         <div className="max-w-[300px] w-full space-y-6 px-4">
