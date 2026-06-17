@@ -2,6 +2,7 @@ import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
 import { useState } from 'react';
 import ReactiveButton from 'reactive-button';
+import { Sparklines } from 'react-sparklines';
 
 export function Welcome() {
   const [state, setState] = useState('idle');
@@ -27,6 +28,9 @@ export function Welcome() {
                 successText="Done"
                 onClick={onClickHandler}
               />
+          </div>
+          <div className="w-[500px] max-w-[100vw] p-4">
+            <Sparklines data={[5, 10, 5, 20, 8, 15]} limit={5} width={100} height={20} margin={5}></Sparklines>
           </div>
         </header>
         <div className="max-w-[300px] w-full space-y-6 px-4">
