@@ -3,6 +3,7 @@
 	import SvelteCompareImageSlider from "svelte-compare-image-slider"
 	import leftImage  from '$lib/images/asite1-1.jpg';
 	import rightImage from '$lib/images/asite1-2.jpg';
+	import { browser } from '$app/environment';
 </script>
 
 <svelte:head>
@@ -13,7 +14,9 @@
 <div class="text-column">
 	<h1>About this app</h1>
 	<div>
-	  <SvelteCompareImageSlider {leftImage} {rightImage} />
+		{#if browser}
+	  	<SvelteCompareImageSlider {leftImage} {rightImage} />
+	  	{/if}
 	</div>
 	<p>
 		This is a <a href="https://svelte.dev/docs/kit">SvelteKit</a> app. You can make your own by typing
