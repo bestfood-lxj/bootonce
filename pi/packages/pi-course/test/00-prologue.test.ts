@@ -15,7 +15,7 @@ test("owner trace", () => {
 test("filter type", () => {
   const broken = runPrologueDemo
     .filter((event) => event.type !== "tool_result")
-    .map((event,index) => { ...event, step: index + 1 });
+    .map((event,index) => ({ ...event, step: index + 1 }));
   console.log(broken)
   assertValidPrologueTrace(broken)
 })
