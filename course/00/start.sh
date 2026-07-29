@@ -1,4 +1,3 @@
-
 cd pi
 npm install
 npm run checkpoint -w @pi/course -- 00
