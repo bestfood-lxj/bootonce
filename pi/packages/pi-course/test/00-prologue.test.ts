@@ -9,7 +9,9 @@ import {
 test("owner trace", () => {
   const trace = runPrologueDemo();
   assert.equal("model",trace.map(event => event.owner).slice(-1)[0])
+  console.log(".....................formatPrologueTrace(trace)")
   console.log(formatPrologueTrace(trace))
+  console.log(".....................end")
 })
 
 test("filter type", () => {
