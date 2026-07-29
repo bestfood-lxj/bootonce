@@ -6,6 +6,20 @@ import {
   runPrologueDemo,
 } from "../src/demo/prologue.js";
 
+test("owner trace", () => {
+  const trace = runPrologueDemo();
+  assert.equal("model",trace.map(event => event.owner).slice(-1)[0])
+  console.log(formatPrologueTrace(trace))
+})
+
+test("filter type", () => {
+  const broken = runPrologueDemo
+    .filter((event) => event.type !== "tool_result")
+    .map((event,index) => { ...event, step: index + 1 });
+  console.log(broken)
+  assertValidPrologueTrace(broken)
+})
+
 test("离线轨迹稳定呈现一条完整反馈回路", () => {
   const trace = runPrologueDemo();
   assert.equal(trace.length, 7);
