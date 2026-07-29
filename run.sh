@@ -1,0 +1,1 @@
+./course/00/start.sh
