@@ -8,7 +8,7 @@ export type DemoEvent =
     }
   | { type: "aborted"; requestId: string };
 export function formatEventAgain(event: DemoEvent): string{
-  swith ( event.type) {
+  switch ( event.type) {
     case "started":
       return `start ${event.requestId}`;
     case "delta":
