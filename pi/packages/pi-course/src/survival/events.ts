@@ -76,7 +76,7 @@ export function readDeltaAgain(value: unknow): DemoEvent {
     return {
       type: "delta",
       requestId: value.requestId,
-      text: value.txt,
+      text: value.text,
     };
   }
   throw new Error("invalid delta event")
