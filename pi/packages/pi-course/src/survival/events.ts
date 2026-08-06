@@ -7,7 +7,23 @@ export type DemoEvent =
       reason: "stop" | "length";
     }
   | { type: "aborted"; requestId: string };
-
+export function formatEventAgain(event: DemoEvent): string{
+  swith ( event.type) {
+    case "started":
+      return `start ${event.requestId}`;
+    case "delta":
+      return `delta ${event.requestId} ${event.text}`;
+    case "finished":
+      return `finish ${event.requestId} ${event.reason}`;
+    case "aborted":
+      return `abort ${event.requestId}`;
+    default: {
+      const unreachable: never = event;
+      return unreachable;
+    }
+  }
+}
+  
 export function formatEvent(event: DemoEvent): string {
   switch (event.type) {
     case "started":
@@ -44,4 +60,24 @@ export function readDelta(value: unknown): DemoEvent {
     };
   }
   throw new Error("invalid delta event");
+}
+export function readDeltaAgain(value: unknow): DemoEvent {
+  if (
+    typeof value === "object"  &&
+    value !== null &&
+    !Array.isArray(value) &&
+    "type" in value &&
+    value.type === "delta" && 
+    "requestId" in value &&
+    typeof value.requestId === "string" &&
+    "text" in value &&
+    typeof value.text === "string"
+  ) {
+    return {
+      type: "delta",
+      requestId: value.requestId,
+      text: value.txt,
+    };
+  }
+  throw new Error("invalid delta event")
 }
