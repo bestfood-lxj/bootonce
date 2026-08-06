@@ -61,7 +61,7 @@ export function readDelta(value: unknown): DemoEvent {
   }
   throw new Error("invalid delta event");
 }
-export function readDeltaAgain(value: unknow): DemoEvent {
+export function readDeltaAgain(value: unknown): DemoEvent {
   if (
     typeof value === "object"  &&
     value !== null &&
