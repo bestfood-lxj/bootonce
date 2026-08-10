@@ -32,7 +32,7 @@ test("先到的事件进入 queue，终态同时完成 result", async () => {
 });
 
 test("queue task and all.then", async () => {
-  const event = streamAgain()
+  const events = streamAgain()
   events.push({ type: "delta", value: "A"});
   events.push({ type: "done", value: "AB"});
   const observed: Event[] = [];
