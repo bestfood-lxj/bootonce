@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { EventStream } from "../src/event-stream.js";
+import { 
+  EventStream,
+  EventStreamAgain,
+} from "../src/event-stream.js";
 
 type Event =
   | { type: "delta"; value: string }

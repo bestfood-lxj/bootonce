@@ -64,6 +64,8 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
   }
 }
 
+export class EventStreamAgain extends EventStream {}
+
 export class AssistantMessageEventStream
   extends EventStream<ModelEvent, AssistantMessage>
   implements ModelStream
