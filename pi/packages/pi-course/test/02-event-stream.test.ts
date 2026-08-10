@@ -17,7 +17,7 @@ function stream(): EventStream<Event, string> {
 }
 
 const streamAgain = () : EventStream<Event, string> => {
-  return new EventStream(
+  return new EventStreamAgain(
     (event: Event) => event.type === "done",
     (event: Event) => event.value,
   );
