@@ -39,7 +39,7 @@ test("queue task and all.then", async () => {
   for await (const event of events) {
     observed.push(event);
   }
-  assert.deepEqual(observed.map(event) => event.type), ["delta", "done"]);
+  assert.deepEqual(observed.map(event => event.type), ["delta", "done"]);
   assert.equal(await events.result(), "AB");
 })
 
