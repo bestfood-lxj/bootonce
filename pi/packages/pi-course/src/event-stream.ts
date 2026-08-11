@@ -75,10 +75,14 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
     private readonly extractResult: (event: T) => R,
   ) {
     super(isComplete,extractResult)
+    this.finalResult = super.finalResult;
+    this.resolveFinalResult = super.resolveFinalResult;
   }
   async *[Symbol.asyncIterator](): AsyncIterable<T> {
-    yield* super[Symbol.asyncIterator]();
-    return 
+    for await (const event of super){
+      yield event as T
+    }
+    return
   }
 }
 
