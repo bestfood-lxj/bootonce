@@ -68,15 +68,15 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
   private readonly queue: T[] = [];
   private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
   private done = false;
-  private readonly finalResult: Promise<R>;
-  private resolveFinalResult!: (result:R) => void;
+  private readonly finalResultAgain: Promise<R>;
+  private resolveFinalResultAgain!: (result:R) => void;
   constructor(
     private readonly isComplete: (event: T) => boolean,
     private readonly extractResult: (event: T) => R,
   ) {
     super(isComplete,extractResult)
-    this.finalResult = super.finalResult;
-    this.resolveFinalResult = super.resolveFinalResult;
+    this.finalResultAgain = super.finalResult;
+    this.resolveFinalResultAgain = super.resolveFinalResult;
   }
   async *[Symbol.asyncIterator](): AsyncIterable<T> {
     for await (const event of super[Symbol.asyncIterator]()){
