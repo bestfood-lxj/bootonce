@@ -78,7 +78,7 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
     this.finalResultAgain = this.finalResult;
     this.resolveFinalResultAgain = this.resolveFinalResult;
   }
-  async *[Symbol.asyncIterator](): AsyncIterator<T> {\
+  async *[Symbol.asyncIterator](): AsyncIterator<T> {
     yield* super[Symbol.asyncIterator]()
   }
 }
