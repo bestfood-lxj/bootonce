@@ -5,15 +5,15 @@ import type {
 } from "./types.js";
 
 export class EventStream<T, R = T> implements AsyncIterable<T> {
-  private readonly queue: T[] = [];
-  private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
-  private done = false;
+  protected readonly queue: T[] = [];
+  protected readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
+  protected done = false;
   protected readonly finalResult: Promise<R>;
   protected resolveFinalResult!: (result: R) => void;
 
   constructor(
-    private readonly isComplete: (event: T) => boolean,
-    private readonly extractResult: (event: T) => R,
+    protected readonly isComplete: (event: T) => boolean,
+    protected readonly extractResult: (event: T) => R,
   ) {
     this.finalResult = new Promise<R>((resolve) => {
       this.resolveFinalResult = resolve;
@@ -78,7 +78,7 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
     this.finalResultAgain = this.finalResult;
     this.resolveFinalResultAgain = this.resolveFinalResult;
   }
-  async *[Symbol.AsyncIterator](): AsyncIterator<T> {
+  async *[Symbol.asyncIterator](): AsyncIterator<T> {
     while (true) {
       if(this.queue.length > 0 ){
         yield this.queue.shift() as T;
