@@ -8,8 +8,8 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
   private readonly queue: T[] = [];
   private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
   private done = false;
-  readonly finalResult: Promise<R>;
-  resolveFinalResult!: (result: R) => void;
+  protect readonly finalResult: Promise<R>;
+  protect resolveFinalResult!: (result: R) => void;
 
   constructor(
     private readonly isComplete: (event: T) => boolean,
