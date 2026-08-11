@@ -64,7 +64,7 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
   }
 }
 
-export class EventStreamAgain<T, R = T> extends EventStream<T, R>{
+export class EventStreamAgain<T, R> extends EventStream<T, R>{
   private readonly queue: T[] = [];
   private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
   private done = false;
@@ -77,7 +77,8 @@ export class EventStreamAgain<T, R = T> extends EventStream<T, R>{
     super(isComplete,extractResult)
   }
   async *[Symbol.asyncIterator](): AsyncIterable<T> {
-    yield* super[Symbol.asyncIterator]() as T;
+    yield* super[Symbol.asyncIterator]();
+    return 
   }
 }
 
