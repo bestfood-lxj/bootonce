@@ -71,10 +71,10 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
   private readonly finalResultAgain: Promise<R>;
   private resolveFinalResultAgain!: (result:R) => void;
   constructor(
-    private readonly isComplete: (event: T) => boolean,
-    private readonly extractResult: (event: T) => R,
+    private readonly isCompleteAgain: (event: T) => boolean,
+    private readonly extractResultAgain: (event: T) => R,
   ) {
-    super(isComplete,extractResult)
+    super(isCompleteAgain,extractResultAgain)
     this.finalResultAgain = this.finalResult;
     this.resolveFinalResultAgain = this.resolveFinalResult;
   }
