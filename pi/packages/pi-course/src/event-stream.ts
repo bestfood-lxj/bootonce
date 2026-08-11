@@ -78,7 +78,24 @@ export class EventStreamAgain<T, R> extends EventStream<T, R>{
     this.finalResultAgain = this.finalResult;
     this.resolveFinalResultAgain = this.resolveFinalResult;
   }
-  
+  async *[Symbol.AsyncIterator](): AsyncIterator<T> {
+    while (true) {
+      if(this.queue.length > 0 ){
+        yield this.queue.shift() as T;
+        continue
+      }
+      if (this.done){
+        return
+      }
+      const next = await new Promise<IteratorResult<T>>((resolve) => {
+        this.waiting.push(resolve)
+      })
+      if(next.done){
+        return;
+      }
+      yield next.value
+    }
+  }
 }
 
 export class AssistantMessageEventStream
