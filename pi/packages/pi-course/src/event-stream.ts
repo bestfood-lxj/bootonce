@@ -65,9 +65,9 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
 }
 
 export class EventStreamAgain<T, R> extends EventStream<T, R>{
-  private readonly queue: T[] = [];
-  private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
-  private done = false;
+  private readonly queueAgain: T[] = [];
+  private readonly waitingAgain: Array<(value: IteratorResult<T>) => void> = [];
+  private doneAgain = false;
   private readonly finalResultAgain: Promise<R>;
   private resolveFinalResultAgain!: (result:R) => void;
   constructor(
