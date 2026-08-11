@@ -77,7 +77,7 @@ export class EventStreamAgain<T, R = T> extends EventStream implements AsyncIter
     super(isComplete,extractResult)
   }
   async *[Symbol.asyncIterator](): AsyncIterable<T> {
-    yield* super[Symbol.asyncIterator]();
+    yield* super[Symbol.asyncIterator]() as AsyncIterator<T>;
   }
 }
 
