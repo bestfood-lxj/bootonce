@@ -74,7 +74,7 @@ export class EventStreamAgain<T, R = T> extends EventStream implements AsyncIter
     private readonly isComplete: (event: T) => boolean,
     private readonly extractResult: (event: T) => R,
   ) {
-    
+    super(isComplete,extractResult)
   }
 }
 
