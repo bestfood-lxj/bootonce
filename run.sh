@@ -1,1 +1,1 @@
-./course/02/start.sh
+./course/03/start.sh
