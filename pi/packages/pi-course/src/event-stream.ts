@@ -64,8 +64,18 @@ export class EventStream<T, R = T> implements AsyncIterable<T> {
   }
 }
 
-export class EventStreamAgain extends EventStream {
-  readonly queue: T[] = [];
+export class EventStreamAgain<T, R = T> extends EventStream implements AsyncIterable<T>{
+  private readonly queue: T[] = [];
+  private readonly waiting: Array<(value: IteratorResult<T>) => void> = [];
+  private done = false;
+  private readonly finalResult: Promise<R>;
+  private resolveFinalResult!: (result:R) => void;
+  constructor(
+    private readonly isComplete: (event: T) => boolean,
+    private readonly extractResult: (event: T) => R,
+  ) {
+    
+  }
 }
 
 export class AssistantMessageEventStream
