@@ -1,0 +1,9 @@
+{
+  "name": "note-lab",
+  "main": "src/index.js",
+  "compatibility_date": "2025-01-01",
+  "durable_objects": {
+    "bindings": [{ "name": "NOTE", "class_name": "Note" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Note"] }]
+}
