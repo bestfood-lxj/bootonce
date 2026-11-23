@@ -29,6 +29,8 @@ export class Note extends DurableObject {
 
   // 读取当前数据
   async get() {
+    console.log("get .................")
+    console.log(typeof buildPushPayload);
     return (await this.ctx.storage.get("note")) ?? null;
   }
 
