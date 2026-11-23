@@ -1,4 +1,7 @@
 import { DurableObject } from "cloudflare:workers";
+import {
+  buildPushPayload,
+} from '@block65/webcrypto-web-push';
 
 export class Note extends DurableObject {
   // 构造函数：每次实例被创建或从休眠中恢复时都会执行
